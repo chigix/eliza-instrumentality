@@ -1,0 +1,28 @@
+{
+  "name": "eliza-inspire",
+  "version": "1.0.0",
+  "description": "Eliza Robot",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --config ./jest.config.json --runInBand",
+    "start": "ts-node --project ./tsconfig.build.json ./src/index.ts"
+  },
+  "repository": "git@github.com:chigix/eliza-inspire.git",
+  "author": "Richard Lea <https://github.com/chigix>",
+  "license": "MIT",
+  "dependencies": {
+    "inquirer": "^7.0.0",
+    "lodash": "^4.17.15",
+    "rxjs": "^6.5.3"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^6.5.0",
+    "@types/jest": "^24.0.19",
+    "@types/lodash": "^4.14.144",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0",
+    "ts-node": "^8.4.1",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.4"
+  }
+}

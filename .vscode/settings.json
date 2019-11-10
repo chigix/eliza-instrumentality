@@ -1,0 +1,6 @@
+{
+    "editor.rulers": [
+        90
+    ],
+    "typescript.tsdk": "node_modules/typescript/lib"
+}

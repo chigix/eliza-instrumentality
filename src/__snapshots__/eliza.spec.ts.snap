@@ -1,0 +1,987 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Instantiate Eliza Main Class 1`] = `
+Object {
+  "final": "Goodbye.  Thank you for talking to me.",
+  "initial": "How do you do.  Please tell me your problem.",
+  "keys": Array [
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "I'm not sure I understand you fully.",
+            "Please go on.",
+            "What does that suggest to you ?",
+            "Do you feel strongly about discussing such things ?",
+          ],
+        },
+      ],
+      "key": "xnone",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "Please don't apoligize.",
+            "Apologies are not necessary.",
+            "I've told you that apologies are not required.",
+          ],
+        },
+      ],
+      "key": "sorry",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "goto sorry",
+          ],
+        },
+      ],
+      "key": "apologize",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "* i remember *",
+          "reasembs": Array [
+            "Do you often think of (2) ?",
+            "Does thinking of (2) bring anything else to mind ?",
+            "What else do you recollect ?",
+            "Why do you recollect (2) just now ?",
+            "What in the present situation reminds you of (2) ?",
+            "What is the connection between me and (2) ?",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* do you remember *",
+          "reasembs": Array [
+            "Did you think I would forget (2) ?",
+            "Why do you think I should recall (2) now ?",
+            "What about (2) ?",
+            "goto what",
+            "You mentioned (2) ?",
+          ],
+        },
+      ],
+      "key": "remember",
+      "rank": 5,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "* if *",
+          "reasembs": Array [
+            "Do you think its likely that (2) ?",
+            "Do you wish that (2) ?",
+            "What do you know about (2) ?",
+            "Really, if (2) ?",
+          ],
+        },
+      ],
+      "key": "if",
+      "rank": 3,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "* i dreamed *",
+          "reasembs": Array [
+            "Really, (2) ?",
+            "Have you ever fantasized (2) while you were awake ?",
+            "Have you ever dreamed (2) before ?",
+            "goto dream",
+          ],
+        },
+      ],
+      "key": "dreamed",
+      "rank": 4,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "What does that dream suggest to you ?",
+            "Do you dream often ?",
+            "What persons appear in your dreams ?",
+            "Do you believe that dreams have something to do with your problems ?",
+          ],
+        },
+      ],
+      "key": "dream",
+      "rank": 3,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "You don't seem quite certain.",
+            "Why the uncertain tone ?",
+            "Can't you be more positive ?",
+            "You aren't sure ?",
+            "Don't you know ?",
+          ],
+        },
+      ],
+      "key": "perhaps",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "I am not interested in names.",
+            "I've told you before, I don't care about names -- please continue.",
+          ],
+        },
+      ],
+      "key": "name",
+      "rank": 15,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "goto xfremd",
+            "I told you before, I don't understand German.",
+          ],
+        },
+      ],
+      "key": "deutsch",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "goto xfremd",
+            "I told you before, I don't understand French.",
+          ],
+        },
+      ],
+      "key": "francais",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "goto xfremd",
+            "I told you before, I don't understand Italian.",
+          ],
+        },
+      ],
+      "key": "italiano",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "goto xfremd",
+            "I told you before, I don't understand Spanish.",
+          ],
+        },
+      ],
+      "key": "espanol",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "I speak only English.",
+          ],
+        },
+      ],
+      "key": "xfremd",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "How do you do.  Please state your problem.",
+            "Hi.  What seems to be your problem ?",
+          ],
+        },
+      ],
+      "key": "hello",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "Do computers worry you ?",
+            "Why do you mention computers ?",
+            "What do you think machines have to do with your problem ?",
+            "Don't you think computers can help people ?",
+            "What about machines worries you ?",
+            "What do you think about machines ?",
+          ],
+        },
+      ],
+      "key": "computer",
+      "rank": 50,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "* am i *",
+          "reasembs": Array [
+            "Do you believe you are (2) ?",
+            "Would you want to be (2) ?",
+            "Do you wish I would tell you you are (2) ?",
+            "What would it mean if you were (2) ?",
+            "goto what",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "Why do you say 'am' ?",
+            "I don't understand that.",
+          ],
+        },
+      ],
+      "key": "am",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "* are you *",
+          "reasembs": Array [
+            "Why are you interested in whether I am (2) or not ?",
+            "Would you prefer if I weren't (2) ?",
+            "Perhaps I am (2) in your fantasies.",
+            "Do you sometimes think I am (2) ?",
+            "goto what",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* are *",
+          "reasembs": Array [
+            "Did you think they might not be (2) ?",
+            "Would you like it if they were not (2) ?",
+            "What if they were not (2) ?",
+            "Possibly they are (2).",
+          ],
+        },
+      ],
+      "key": "are",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "* your *",
+          "reasembs": Array [
+            "Why are you concerned over my (2) ?",
+            "What about your own (2) ?",
+            "Are you worried about someone else's (2) ?",
+            "Really, my (2) ?",
+          ],
+        },
+      ],
+      "key": "your",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "* was i *",
+          "reasembs": Array [
+            "What if you were (2) ?",
+            "Do you think you were (2) ?",
+            "Were you (2) ?",
+            "What would it mean if you were (2) ?",
+            "What does (2) suggest to you ?",
+            "goto what",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* i was *",
+          "reasembs": Array [
+            "Were you really ?",
+            "Why do you tell me you were (2) now ?",
+            "Perhaps I already know you were (2).",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* was you *",
+          "reasembs": Array [
+            "Would you like to believe I was (2) ?",
+            "What suggests that I was (2) ?",
+            "What do you think ?",
+            "Perhaps I was (2).",
+            "What if I had been (2) ?",
+          ],
+        },
+      ],
+      "key": "was",
+      "rank": 2,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "* i @desire *",
+          "reasembs": Array [
+            "What would it mean to you if you got (3) ?",
+            "Why do you want (3) ?",
+            "Suppose you got (3) soon ?",
+            "What if you never got (3) ?",
+            "What would getting (3) mean to you ?",
+            "What does wanting (3) have to do with this discussion ?",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* i am* @sad *",
+          "reasembs": Array [
+            "I am sorry to hear that you are (3).",
+            "Do you think that coming here will help you not to be (3) ?",
+            "I'm sure it's not pleasant to be (3).",
+            "Can you explain what made you (3) ?",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* i am* @happy *",
+          "reasembs": Array [
+            "How have I helped you to be (3) ?",
+            "Has your treatment made you (3) ?",
+            "What makes you (3) just now ?",
+            "Can you explain why you are suddenly (3) ?",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* i was *",
+          "reasembs": Array [
+            "goto was",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* i @belief * i *",
+          "reasembs": Array [
+            "Do you really think so ?",
+            "But you are not sure you (3).",
+            "Do you really doubt you (3) ?",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* i* @belief *you *",
+          "reasembs": Array [
+            "goto you",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* i am *",
+          "reasembs": Array [
+            "Is it because you are (2) that you came to me ?",
+            "How long have you been (2) ?",
+            "Do you believe it is normal to be (2) ?",
+            "Do you enjoy being (2) ?",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* i @cannot *",
+          "reasembs": Array [
+            "How do you think that you can't (3) ?",
+            "Have you tried ?",
+            "Perhaps you could (3) now.",
+            "Do you really want to be able to (3) ?",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* i don't *",
+          "reasembs": Array [
+            "Don't you really (2) ?",
+            "Why don't you (2) ?",
+            "Do you wish to be able to (2) ?",
+            "Does that trouble you ?",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* do i feel *",
+          "reasembs": Array [
+            "Tell me more about such feelings.",
+            "Do you often feel (2) ?",
+            "Do you enjoy feeling (2) ?",
+            "Of what does feeling (2) remind you ?",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* i * you *",
+          "reasembs": Array [
+            "Perhaps in your fantasies we (2) each other.",
+            "Do you wish to (2) me ?",
+            "You seem to need to (2) me.",
+            "Do you (2) anyone else ?",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "You say (1) ?",
+            "Can you elaborate on that ?",
+            "Do you say (1) for some special reason ?",
+            "That's quite interesting.",
+          ],
+        },
+      ],
+      "key": "i",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "* you remind me of *",
+          "reasembs": Array [
+            "goto alike",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* you are *",
+          "reasembs": Array [
+            "What makes you think I am (2) ?",
+            "Does it please you to believe I am (2) ?",
+            "Do you sometimes wish you were (2) ?",
+            "Perhaps you would like to be (2).",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* you* me *",
+          "reasembs": Array [
+            "Why do you think I (2) you ?",
+            "You like to think I (2) you -- don't you ?",
+            "What makes you think I (2) you ?",
+            "Really, I (2) you ?",
+            "Do you wish to believe I (2) you ?",
+            "Suppose I did (2) you -- what would that mean ?",
+            "Does someone else believe I (2) you ?",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* you *",
+          "reasembs": Array [
+            "We were discussing you -- not me.",
+            "Oh, I (2) ?",
+            "You're not really talking about me -- are you ?",
+            "What are your feelings now ?",
+          ],
+        },
+      ],
+      "key": "you",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "You seem to be quite positive.",
+            "You are sure.",
+            "I see.",
+            "I understand.",
+          ],
+        },
+      ],
+      "key": "yes",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "Are you saying no just to be negative?",
+            "You are being a bit negative.",
+            "Why not ?",
+            "Why 'no' ?",
+          ],
+        },
+      ],
+      "key": "no",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": true,
+          "pattern": "* my *",
+          "reasembs": Array [
+            "Lets discuss further why your (2).",
+            "Earlier you said your (2).",
+            "But your (2).",
+            "Does that have anything to do with the fact that your (2) ?",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* my* @family *",
+          "reasembs": Array [
+            "Tell me more about your family.",
+            "Who else in your family (4) ?",
+            "Your (3) ?",
+            "What else comes to mind when you think of your (3) ?",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* my *",
+          "reasembs": Array [
+            "Your (2) ?",
+            "Why do you say your (2) ?",
+            "Does that suggest anything else which belongs to you ?",
+            "Is it important that your (2) ?",
+          ],
+        },
+      ],
+      "key": "my",
+      "rank": 2,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "* can you *",
+          "reasembs": Array [
+            "You believe I can (2) don't you ?",
+            "goto what",
+            "You want me to be able to (2).",
+            "Perhaps you would like to be able to (2) yourself.",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* can i *",
+          "reasembs": Array [
+            "Whether or not you can (2) depends on you more than me.",
+            "Do you want to be able to (2) ?",
+            "Perhaps you don't want to (2).",
+            "goto what",
+          ],
+        },
+      ],
+      "key": "can",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "Why do you ask ?",
+            "Does that question interest you ?",
+            "What is it you really wanted to know ?",
+            "Are such questions much on your mind ?",
+            "What answer would please you most ?",
+            "What do you think ?",
+            "What comes to mind when you ask that ?",
+            "Have you asked such questions before ?",
+            "Have you asked anyone else ?",
+          ],
+        },
+      ],
+      "key": "what",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "Is that the real reason ?",
+            "Don't any other reasons come to mind ?",
+            "Does that reason seem to explain anything else ?",
+            "What other reasons might there be ?",
+          ],
+        },
+      ],
+      "key": "because",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "* why don't you *",
+          "reasembs": Array [
+            "Do you believe I don't (2) ?",
+            "Perhaps I will (2) in good time.",
+            "Should you (2) yourself ?",
+            "You want me to (2) ?",
+            "goto what",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "* why can't i *",
+          "reasembs": Array [
+            "Do you think you should be able to (2) ?",
+            "Do you want to be able to (2) ?",
+            "Do you believe this will help you to (2) ?",
+            "Have you any idea why you can't (2) ?",
+            "goto what",
+          ],
+        },
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "goto what",
+          ],
+        },
+      ],
+      "key": "why",
+      "rank": 0,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "* @everyone *",
+          "reasembs": Array [
+            "Really, (2) ?",
+            "Surely not (2).",
+            "Can you think of anyone in particular ?",
+            "Who, for example?",
+            "Are you thinking of a very special person ?",
+            "Who, may I ask ?",
+            "Someone special perhaps ?",
+            "You have a particular person in mind, don't you ?",
+            "Who do you think you're talking about ?",
+          ],
+        },
+      ],
+      "key": "everyone",
+      "rank": 2,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "goto everyone",
+          ],
+        },
+      ],
+      "key": "everybody",
+      "rank": 2,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "goto everyone",
+          ],
+        },
+      ],
+      "key": "nobody",
+      "rank": 2,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "goto everyone",
+          ],
+        },
+      ],
+      "key": "noone",
+      "rank": 2,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "Can you think of a specific example ?",
+            "When ?",
+            "What incident are you thinking of ?",
+            "Really, always ?",
+          ],
+        },
+      ],
+      "key": "always",
+      "rank": 1,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "*",
+          "reasembs": Array [
+            "In what way ?",
+            "What resemblance do you see ?",
+            "What does that similarity suggest to you ?",
+            "What other connections do you see ?",
+            "What do you suppose that resemblance means ?",
+            "What is the connection, do you suppose ?",
+            "Could here really be some connection ?",
+            "How ?",
+          ],
+        },
+      ],
+      "key": "alike",
+      "rank": 10,
+    },
+    Object {
+      "decomps": Array [
+        Object {
+          "isAware": false,
+          "pattern": "* @be *like *",
+          "reasembs": Array [
+            "goto alike",
+          ],
+        },
+      ],
+      "key": "like",
+      "rank": 10,
+    },
+  ],
+  "mentionRoutes": Array [
+    Object {
+      "tag": "belief",
+      "words": Array [
+        "feel",
+        "think",
+        "believe",
+        "wish",
+      ],
+    },
+    Object {
+      "tag": "family",
+      "words": Array [
+        "mother",
+        "mom",
+        "father",
+        "dad",
+        "sister",
+        "brother",
+        "wife",
+        "children",
+        "child",
+      ],
+    },
+    Object {
+      "tag": "desire",
+      "words": Array [
+        "want",
+        "need",
+      ],
+    },
+    Object {
+      "tag": "sad",
+      "words": Array [
+        "unhappy",
+        "depressed",
+        "sick",
+      ],
+    },
+    Object {
+      "tag": "happy",
+      "words": Array [
+        "elated",
+        "glad",
+        "better",
+      ],
+    },
+    Object {
+      "tag": "cannot",
+      "words": Array [
+        "can't",
+      ],
+    },
+    Object {
+      "tag": "everyone",
+      "words": Array [
+        "everybody",
+        "nobody",
+        "noone",
+      ],
+    },
+    Object {
+      "tag": "be",
+      "words": Array [
+        "am",
+        "is",
+        "are",
+        "was",
+      ],
+    },
+  ],
+  "postList": Array [
+    Object {
+      "dest": "are",
+      "src": "am",
+    },
+    Object {
+      "dest": "my",
+      "src": "your",
+    },
+    Object {
+      "dest": "you",
+      "src": "me",
+    },
+    Object {
+      "dest": "yourself",
+      "src": "myself",
+    },
+    Object {
+      "dest": "myself",
+      "src": "yourself",
+    },
+    Object {
+      "dest": "you",
+      "src": "i",
+    },
+    Object {
+      "dest": "I",
+      "src": "you",
+    },
+    Object {
+      "dest": "your",
+      "src": "my",
+    },
+    Object {
+      "dest": "you are",
+      "src": "i'm",
+    },
+  ],
+  "preList": Array [
+    Object {
+      "dest": "don't",
+      "src": "dont",
+    },
+    Object {
+      "dest": "can't",
+      "src": "cant",
+    },
+    Object {
+      "dest": "won't",
+      "src": "wont",
+    },
+    Object {
+      "dest": "remember",
+      "src": "recollect",
+    },
+    Object {
+      "dest": "dreamed",
+      "src": "dreamt",
+    },
+    Object {
+      "dest": "dream",
+      "src": "dreams",
+    },
+    Object {
+      "dest": "perhaps",
+      "src": "maybe",
+    },
+    Object {
+      "dest": "what",
+      "src": "how",
+    },
+    Object {
+      "dest": "what",
+      "src": "when",
+    },
+    Object {
+      "dest": "yes",
+      "src": "certainly",
+    },
+    Object {
+      "dest": "computer",
+      "src": "machine",
+    },
+    Object {
+      "dest": "computer",
+      "src": "computers",
+    },
+    Object {
+      "dest": "was",
+      "src": "were",
+    },
+    Object {
+      "dest": "you are",
+      "src": "you're",
+    },
+    Object {
+      "dest": "i am",
+      "src": "i'm",
+    },
+    Object {
+      "dest": "alike",
+      "src": "same",
+    },
+  ],
+  "quitList": " bye    goodbye    quit ",
+}
+`;

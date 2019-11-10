@@ -1,2 +1,3 @@
-# eliza-inspire
+# Eliza-Instrumentality
+
 Eliza Robot
