@@ -1,8 +1,5 @@
 import { Decomp } from './decompo';
 
-export function createGotoKey() {
-  return new Key(null, 0, null);
-}
 export function createKey(
   key: string,
   rank: number,
@@ -21,7 +18,7 @@ export class Key {
   /**
    * copy
    */
-  public copy(k: Key) {
+  protected copy(k: Key) {
     this.key = k.key;
     this.rank = k.rank;
     this.decomp = k.decomp;

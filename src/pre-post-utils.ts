@@ -29,7 +29,7 @@ function xlate(prePosts: PrePost[], str: string) {
  *
  * @export
  * @param {string} s
- * 
+ *
  * Learned from `PrePostList.translate(String s)`
  */
 export function translate(prePosts: PrePost[], s: string) {

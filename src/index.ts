@@ -13,10 +13,15 @@ import { fromFile } from './script-reader';
       if (!answer || answer.length < 1) {
         return prompts.complete();
       }
+      const reply = eliza.processInput(answer);
+      if (eliza.isFinished()) {
+        console.log(reply);
+        return prompts.complete();
+      }
       prompts.next({
         type: 'input',
         name: `userInput-${i}`,
-        message: `Question#${i}: ${eliza.processInput(answer)}`,
+        message: `${reply}\n user#${i} >> `,
       });
     },
     error: (err) => {
@@ -29,6 +34,6 @@ import { fromFile } from './script-reader';
   prompts.next({
     type: 'input',
     name: `userInput-${i}`,
-    message: eliza.getInitialStr(),
+    message: eliza.getInitialStr() + `\n user#${i} >> `,
   });
 })();

@@ -124,19 +124,6 @@ function match_v1(str: string, pat: string): string[] | null {
 }
 
 /**
- * This version is clearer than `match_v1`, but hopelessly slow
- *
- * @export
- * @param {string} strIn
- * @param {string} patIn
- * @param {string[]} matches
- * @returns
- */
-function match_v2(strIn: string, patIn: string, matches: string[]) {
-  return true;
-}
-
-/**
  * Check if the script line read match the given pattern
  *
  * @export
@@ -158,12 +145,12 @@ export function match(str: string, pat: string) {
  * @param {string} dest
  * @returns
  */
-export function translate(str: string, src: string, dest: string) {
+export function replaceAll(str: string, src: string, dest: string) {
   if (src.length !== dest.length) {
-    throw new Error('Impossible Error');
+    throw new Error('Fatal Code Error: dest and src should be the same.');
   }
   for (let index = 0; index < src.length; index++) {
-    str = str.replace(src.charAt(index), dest.charAt(index));
+    str = str.split(src.charAt(index)).join(dest.charAt(index));
   }
 
   return str;

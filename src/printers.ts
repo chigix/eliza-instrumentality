@@ -45,7 +45,7 @@ export function printKeySimple(indent: number) {
 export function snapshotDecomp(d: Decomp) {
   return {
     pattern: d.getPattern(),
-    isAware: d.isAware(),
+    isAware: d.isMemoryKey(),
     reasembs: d.getReasemb(),
   };
 }

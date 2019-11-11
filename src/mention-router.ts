@@ -19,7 +19,7 @@ export function matchDecomposition(
   synonyms: MentionRoute[], str: string, pat: string): string[] | null {
   const pickMentionTag = EString.match(pat, '*@* *');
   if (!pickMentionTag) {
-    // no ancestorTag in decomposition pattern
+    // no tagged mention in decomposition pattern
     return EString.match(str, pat);
   }
   // isolate the mention tag
@@ -41,11 +41,13 @@ export function matchDecomposition(
     }
     const n = EString.count(head, '*');
     // Make room for the synonym in the match list.
-    for (let j = matchedParts.length - 2; j >= n; j--) {
-      matchedParts[j + 1] = matchedParts[j];
-    }
-    // The synonym goes in the match list.
-    matchedParts[n] = word;
+    const newArr = [
+      ...matchedParts.slice(0, n),
+      // The synonym goes in the match list.
+      word,
+      ...matchedParts.slice(n),
+    ];
+    matchedParts = newArr;
     return true;
   });
   return matchedParts;

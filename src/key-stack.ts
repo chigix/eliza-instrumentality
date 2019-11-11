@@ -1,8 +1,5 @@
-import _ = require('lodash');
 import * as estring from './estring';
 import { Key } from './key';
-
-const stackSize = 20;
 
 /**
  * Break the string `s` into words.
@@ -13,9 +10,12 @@ const stackSize = 20;
  * @param {string} s
  *
  * Learned from `KeyList.buildKeyStack(KeyStack stack, String s)`
+ *
+ * Rank keeping algorithm from `KeyStack#pushKey` method has been merged
+ * into this method as well.
  */
-export function buildKeyStack(keys: Key[], stack: KeyStack, s: string) {
-  stack.reset();
+export function buildKeyStack(keys: Key[], s: string) {
+  const keyList = [] as Key[];
   let guess = estring.trim(s);
   do {
     const lines = estring.match(guess, '* *');
@@ -23,32 +23,38 @@ export function buildKeyStack(keys: Key[], stack: KeyStack, s: string) {
       break;
     }
     const matchedKey = keys.find(k => k.getKey() === lines[0]);
-    if (matchedKey) { stack.pushKey(matchedKey); }
+    if (matchedKey) { keyList.push(matchedKey); }
     guess = lines[1];
   } while (true);
   const finalMatch = keys.find(k => k.getKey() === guess);
-  if (finalMatch) { stack.pushKey(finalMatch); }
+  if (finalMatch) { keyList.push(finalMatch); }
+  return new KeyStack(sortKeysByRank(keyList));
+}
+
+/**
+ * Keep the highest rank keys at the bottom.
+ *
+ * Learned from `KeyStack#pushKey(Key key)`
+ *
+ * @param keyList
+ */
+function sortKeysByRank(keyList: Key[]) {
+  return keyList.sort((a, b) => b.getRank() - a.getRank());
 }
 
 export class KeyStack {
 
   private keyStack: Key[] = [];
 
-  /* The to pof the key stack */
-  private keyTop = 0;
+  constructor($keyStack: Key[]) {
+    this.keyStack = $keyStack;
+  }
 
   /**
    * Get the stack size.
    */
   public getKeyTop() {
-    return this.keyTop;
-  }
-
-  /**
-   * Reset the key stack
-   */
-  public reset() {
-    this.keyTop = 0;
+    return this.keyStack.length;
   }
 
   /**
@@ -58,23 +64,4 @@ export class KeyStack {
     return this.keyStack[n] || null;
   }
 
-  /**
-   * Push a key into the stack.
-   * Keep the highest rank keys at the bottom.
-   */
-  public pushKey(key: Key) {
-    if (_.isNull(key)) {
-      console.log('push null key');
-
-      return;
-    }
-    let i = 0;
-    for (; i > 0; i--) {
-      if (key.getRank() > this.keyStack[i - 1].getRank()) {
-        this.keyStack[i] = this.keyStack[i - 1];
-      } else { break; }
-    }
-    this.keyStack[i] = key;
-    this.keyTop++;
-  }
 }

@@ -5,11 +5,14 @@ import { Decomp } from './decompo';
 import * as estring from './estring';
 import * as mention from './mention-router';
 import { PrePost, Reasemb, MentionRoute, Word } from './interfaces';
-import { Key, createGotoKey } from './key';
-import { KeyStack, buildKeyStack } from './key-stack';
+import { Key } from './key';
+import { GotoKey } from './key-goto';
+import { buildKeyStack } from './key-stack';
 import * as PrePostUtil from './pre-post-utils';
 import * as printers from './printers';
-import { UnexpectedNumberException } from './exceptions';
+import {
+  UnexpectedNumberException, UnknownRuleException, GotoLostException,
+} from './exceptions';
 
 const printSynonyms = true;
 const printKeys = true;
@@ -23,10 +26,10 @@ export interface Eliza {
   processInput(s: string): string;
 }
 
-export function loadEliza(script$: Observable<string>): Promise<Eliza> {
+export async function loadEliza(script$: Observable<string>): Promise<Eliza> {
   const eliza = new ElizaImpl();
-  return eliza.readScript(script$).toPromise()
-    .then(() => eliza);
+  await eliza.readScript(script$).toPromise();
+  return eliza;
 }
 
 /**
@@ -45,7 +48,6 @@ class ElizaImpl implements Eliza {
   private initialStr = 'Hello.';
   private finalStr = 'Goodbye.';
   private quitList: Word[] = [];
-  private keyStack: KeyStack = new KeyStack();
   private lastDecomp: Decomp[] = [];
   private lastReasemb: Reasemb[] | null = [];
 
@@ -116,7 +118,7 @@ class ElizaImpl implements Eliza {
           if (matchedParts[2].length > 0) {
             n = parseInt(matchedParts[2], 10);
             if (_.isNaN(n)) {
-              throw new UnexpectedNumberException(matchedParts[2]);
+              throw new UnexpectedNumberException(matchedParts[2], 'key');
             }
           }
           this.keys.push(new Key(
@@ -178,7 +180,7 @@ class ElizaImpl implements Eliza {
       }
     });
     if (!matchedPattern) {
-      console.error(`Unrecognized Input: ${s}`);
+      throw new UnknownRuleException(s);
     }
   }
 
@@ -220,12 +222,12 @@ class ElizaImpl implements Eliza {
    */
   public processInput(s: string) {
     //  Do some input transformations first.
-    s = estring.translate(s,
+    s = estring.replaceAll(s,
       'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');
-    s = estring.translate(s,
+    s = estring.replaceAll(s,
       '@#$%^&*()_-+=~`{[}]|:;<>\\"', '                          ');
-    s = estring.translate(s, ',?!', '...');
-    //  Compress out multiple speace.
+    s = estring.replaceAll(s, ',?!', '...');
+    //  Compress out multiple space.
     s = estring.compress(s);
     let matchedParts = estring.match(s, '*.*');
     //  Break apart sentences, and do each separately.
@@ -245,8 +247,8 @@ class ElizaImpl implements Eliza {
     //  No memory, reply with xnone.
     const key = this.keys.find(k => k.getKey() === 'xnone');
     if (key) {
-      const reply = this.decompose(key, s, createGotoKey());
-      if (reply != null) { return reply; }
+      const reply = this.decompose(key, s);
+      if (_.isString(reply)) { return reply; }
     }
 
     //  No xnone, just say anything.
@@ -285,17 +287,17 @@ class ElizaImpl implements Eliza {
 
       return this.finalStr;
     }
-    buildKeyStack(this.keys, this.keyStack, s);
-    for (let i = 0; i < this.keyStack.getKeyTop(); i++) {
-      const gotoKey = createGotoKey();
-      do {
-        const reply = this.decompose(this.keyStack.getKey(i), s, gotoKey);
-        if (reply) { return reply; }
-      } while (0);
-      //  If decomposition returned gotoKey, try it
-      while (gotoKey.getKey()) {
-        const reply = this.decompose(gotoKey, s, gotoKey);
-        if (reply) { return reply; }
+    const keyStack = buildKeyStack(this.keys, s);
+    for (let i = 0; i < keyStack.getKeyTop(); i++) {
+      let reply = this.decompose(keyStack.getKey(i), s);
+      while (reply) {
+        //  If decomposition returned gotoKey, try it
+        if (reply instanceof GotoKey) {
+          const gotoKey = reply;
+          reply = this.decompose(gotoKey, s);
+          continue;
+        }
+        return reply;
       }
     }
 
@@ -305,21 +307,26 @@ class ElizaImpl implements Eliza {
   /**
    * Decompose a string according to the given key.
    * Try each decomposition rule in order.
-   * If it matches, assemble a reply and return it.
+   * If it matches, assemble a mentionTokenized and return it.
    * If assembly fails, try another decomposition rule.
    * If assembly is a goto rule, return null and give the key.
-   * If assembly succeeds, return the reply.
+   * If assembly succeeds, return the mentionTokenized.
    */
-  private decompose(key: Key, s: string, gotoKey: Key) {
-    for (const decomp of (key.getDecomp() || [])) {
-      const reply = mention.matchDecomposition(this.synonyms, s, decomp.getPattern());
-      if (reply) {
-        const rep = this.assemble(decomp, reply, gotoKey);
-        if (rep) {
-          return rep;
+  private decompose(key: Key, s: string) {
+    for (const decomposition of (key.getDecomp() || [])) {
+      const mentionTokenized = mention
+        .matchDecomposition(this.synonyms, s, decomposition.getPattern());
+      if (mentionTokenized) {
+        const rep = this.assemble(decomposition, mentionTokenized);
+        if (!rep) {
+          continue;
         }
-        if (gotoKey.getKey()) {
-          return null;
+        if (rep instanceof GotoKey) {
+          if (rep.getKey()) {
+            return rep;
+          }
+        } else {
+          return rep;
         }
       }
     }
@@ -333,19 +340,17 @@ class ElizaImpl implements Eliza {
    *   the gotoKey to use.
    * Otherwise return the response.
    */
-  private assemble(d: Decomp, reply: string[], gotoKey: Key) {
+  private assemble(d: Decomp, reply: string[]) {
     let rule = d.nextRule();
     do {
       const lines = estring.match(rule, 'goto *');
       if (lines) {
-        const keyToSet = this.keys.find(k => k.getKey() === lines[0]);
+        const gotoKey = this.keys.find(k => k.getKey() === lines[0]);
         //  goto rule -- set gotoKey and return false.
-        if (!keyToSet || !keyToSet.getKey()) {
-          console.warn(`Unexpected?: Goto rule did not match key: ${lines[0]}`);
-          return null;
+        if (gotoKey && gotoKey.getKey()) {
+          return new GotoKey(gotoKey);
         }
-        gotoKey.copy(keyToSet);
-        return null;
+        throw new GotoLostException(rule);
       }
     } while (0);
     let work = '';
@@ -356,10 +361,9 @@ class ElizaImpl implements Eliza {
       }
       //  reassembly rule with number substitution
       rule = lines[2];        // there might be more
-      let n = parseInt(lines[1], 10) - 1;
+      const n = parseInt(lines[1], 10) - 1;
       if (isNaN(n)) {
-        console.error(`Number is wrong in reassembly rule ${lines[1]}`);
-        n = 0;
+        throw new UnexpectedNumberException(lines[1], 'reassembly');
       }
       if (n < 0 || n > reply.length) {
         console.error(`Substitution number is bad ${lines[1]}`);
@@ -369,7 +373,7 @@ class ElizaImpl implements Eliza {
       work += `${lines[0]} ${reply[n]}`;
     } while (true);
     work += rule;
-    if (d.isAware()) {
+    if (d.isMemoryKey()) {
       this.mem.push(work);
 
       return null;

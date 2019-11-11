@@ -21,8 +21,7 @@ export class Decomp {
   constructor(
     private pattern: string,
     private mem: boolean,
-    private reasemb: Reasemb[]) {
-  }
+    private reasemb: Reasemb[]) { }
 
   /**
    * pattern
@@ -34,7 +33,7 @@ export class Decomp {
   /**
    * Get the mem flag.
    */
-  public isAware() {
+  public isMemoryKey() {
     return this.mem;
   }
 
@@ -53,7 +52,7 @@ export class Decomp {
    * from original code.
    */
   public nextRule() {
-    if (this.mem) {
+    if (this.isMemoryKey()) {
       this.currReasmb = Math.floor(Math.random() * this.reasemb.length);
     }
     // Increment and make sure it is within range.
