@@ -1,5 +1,6 @@
-import * as fs from 'fs';
 import _ from 'lodash';
+import { Observable, of, concat } from 'rxjs';
+import { scan, tap, concatMap, filter } from 'rxjs/operators';
 import { Decomp } from './decompo';
 import * as estring from './estring';
 import * as mention from './mention-router';
@@ -22,10 +23,10 @@ export interface Eliza {
   processInput(s: string): string;
 }
 
-export function loadEliza(script?: 'eliza.script'): Eliza {
+export function loadEliza(script$: Observable<string>): Promise<Eliza> {
   const eliza = new ElizaImpl();
-  eliza.readScript(script || 'eliza.script');
-  return eliza;
+  return eliza.readScript(script$).toPromise()
+    .then(() => eliza);
 }
 
 /**
@@ -52,7 +53,7 @@ class ElizaImpl implements Eliza {
   private finished = false;
 
   constructor() {
-    // Empty Construcgtor
+    // Empty Constructor
   }
 
   /**
@@ -255,15 +256,18 @@ class ElizaImpl implements Eliza {
   /**
    * readScript
    */
-  public readScript(script: string) {
-    const lines = fs.readFileSync(script, 'utf8').split('\n');
-    if (lines.length < 1) {
-      throw new Error('Cannot load Eliza Script!');
-    }
-    lines.filter(line => line.trim().length > 0 && !line.startsWith('%'))
-      .forEach(line => this.collect(line));
-
-    return true;
+  public readScript(script$: Observable<string>) {
+    return concat(script$, of('\n')).pipe(
+      scan(({ buffer }, chunk) => {
+        // const split = (line + chunk).split('\n');
+        const split = (buffer + chunk).split('\n');
+        const rest = split.pop();
+        return { buffer: rest || '', lines: split };
+      }, { buffer: '', lines: [''] }),
+      concatMap(pack => pack.lines),
+      filter(line => line.trim().length > 0 && !line.startsWith('%')),
+      tap(line => this.collect(line)),
+    );
   }
 
   /**

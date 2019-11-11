@@ -1,10 +1,10 @@
 import * as inquirer from 'inquirer';
 import { Subject as RxSubject } from 'rxjs';
 import { loadEliza } from './eliza';
+import { fromFile } from './script-reader';
 
-const eliza = loadEliza();
-
-(function main() {
+(async function main() {
+  const eliza = await loadEliza(fromFile('eliza.script'));
   let i = 0;
   const prompts = new RxSubject<inquirer.DistinctQuestion>();
   inquirer.prompt(prompts).ui.process.subscribe({
