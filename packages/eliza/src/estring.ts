@@ -1,4 +1,6 @@
-import _ from 'lodash';
+import trimStart from 'lodash/trimStart';
+import trimString from 'lodash/trim';
+import countBy from 'lodash/countBy';
 
 const NUMBERS = '0123456789';
 
@@ -199,7 +201,7 @@ export function compress(s: string) {
  * @param {string} s
  */
 export function trim(s: string) {
-  return _.trimStart(s);
+  return trimStart(s);
 }
 
 /**
@@ -210,12 +212,12 @@ export function trim(s: string) {
  * @returns
  */
 export function pad(s: string) {
-  return ` ${_.trim(s)} `;
+  return ` ${trimString(s)} `;
 }
 
 /**
  * Count number of occurrances of c in str
  */
 export function count(s: string, c: string) {
-  return _.countBy(s)[c] || 0;
+  return countBy(s)[c] || 0;
 }

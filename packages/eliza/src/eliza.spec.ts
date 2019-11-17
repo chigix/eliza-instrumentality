@@ -1,5 +1,5 @@
 import { loadEliza } from './eliza';
-import { fromFile } from './script-reader';
+import { fromFile } from 'eliza-util';
 
 test('Instantiate Eliza Main Class', async () => {
   const eliza = await loadEliza(fromFile('eliza.script'));
@@ -20,7 +20,7 @@ test('simple initial conversation', async () => {
     .toEqual('Can you think of anyone in particular ?');
 });
 
-test.only('eliza script', async () => {
+test('eliza script', async () => {
   const eliza = await loadEliza(fromFile('eliza.script'));
   expect(eliza.processInput('Men are all alike.'))
     .toEqual('In what way ?');

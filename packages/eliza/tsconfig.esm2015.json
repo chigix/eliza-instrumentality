@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "module": "es2015",
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "target": "es2015",
+  }
+}

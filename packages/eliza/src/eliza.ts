@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import isString from 'lodash/isString';
 import { Observable, of, concat } from 'rxjs';
 import { scan, tap, concatMap, filter } from 'rxjs/operators';
 import { Decomp } from './decompo';
@@ -88,7 +88,7 @@ class ElizaImpl implements Eliza {
       {
         pattern: '*reasmb: *',
         onMatched: (matchedParts: string[]) => {
-          if (_.isNull(this.lastReasemb)) {
+          if (!this.lastReasemb) {
             return console.error('Error: no last reasemb');
           }
           this.lastReasemb.push(matchedParts[1]);
@@ -97,7 +97,7 @@ class ElizaImpl implements Eliza {
       {
         pattern: '*decomp: *',
         onMatched: (matchedParts: string[]) => {
-          if (_.isNull(this.lastDecomp)) {
+          if (!this.lastDecomp) {
             return console.error('Error: no last decomp');
           }
           this.lastReasemb = [];
@@ -117,7 +117,7 @@ class ElizaImpl implements Eliza {
           let n = 0;
           if (matchedParts[2].length > 0) {
             n = parseInt(matchedParts[2], 10);
-            if (_.isNaN(n)) {
+            if (isNaN(n)) {
               throw new UnexpectedNumberException(matchedParts[2], 'key');
             }
           }
@@ -172,12 +172,13 @@ class ElizaImpl implements Eliza {
           this.quitList.push(` ${matchedParts[1]} `);
         },
       },
-    ].find(matcher => {
-      const matchedParts = estring.match(s, matcher.pattern);
+    ].find(({ pattern, onMatched }) => {
+      const matchedParts = estring.match(s, pattern);
       if (matchedParts) {
-        matcher.onMatched(matchedParts);
-        return matcher;
+        onMatched(matchedParts);
+        return true;
       }
+      return false;
     });
     if (!matchedPattern) {
       throw new UnknownRuleException(s);
@@ -248,7 +249,7 @@ class ElizaImpl implements Eliza {
     const key = this.keys.find(k => k.getKey() === 'xnone');
     if (key) {
       const reply = this.decompose(key, s);
-      if (_.isString(reply)) { return reply; }
+      if (isString(reply)) { return reply; }
     }
 
     //  No xnone, just say anything.

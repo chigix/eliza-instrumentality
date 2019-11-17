@@ -1,0 +1,28 @@
+{
+  "name": "eliza-core",
+  "version": "1.0.0",
+  "description": "A rendition of ELIZA program engine by Weizenbaum sharable for all javascript environments",
+  "keywords": [
+    "nlp",
+    "ai",
+    "chatbot",
+    "eliza",
+    "weizenbaum",
+    "psychotherapist"
+  ],
+  "author": "Richard Lea <chigix@zoho.com>",
+  "homepage": "https://github.com/chigix/eliza-instrumentality",
+  "license": "MIT",
+  "main": "./src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chigix/eliza-instrumentality.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chigix/eliza-instrumentality/issues"
+  },
+  "dependencies": {
+    "lodash": "^4.17.15",
+    "rxjs": "^6.5.3"
+  }
+}

@@ -1,9 +1,9 @@
 import * as inquirer from 'inquirer';
 import { Subject as RxSubject } from 'rxjs';
-import { loadEliza } from './eliza';
-import { fromFile } from './script-reader';
+import { loadEliza } from 'eliza-core';
+import { fromFile } from 'eliza-util';
 
-(async function main() {
+export async function run() {
   const eliza = await loadEliza(fromFile('eliza.script'));
   let i = 0;
   const prompts = new RxSubject<inquirer.DistinctQuestion>();
@@ -36,4 +36,4 @@ import { fromFile } from './script-reader';
     name: `userInput-${i}`,
     message: eliza.getInitialStr() + `\n user#${i} >> `,
   });
-})();
+}

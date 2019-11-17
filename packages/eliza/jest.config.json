@@ -1,0 +1,5 @@
+{
+  "name": "eliza-core",
+  "rootDir": ".",
+  "coverageDirectory": "../../coverage/eliza"
+}

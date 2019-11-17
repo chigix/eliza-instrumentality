@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    /* Basic Options */
+    "rootDir": ".",
+    "sourceMap": true,                     /* Generates corresponding '.map' file. */
+    "removeComments": true,                /* Do not emit comments to output. */
+    "declaration": false,
+    "declarationMap": false,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "incremental": false,                    /* Enable incremental compilation */
+    "importHelpers": false,
+    "target": "es2015",                     /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019' or 'ESNEXT'. */
+    "module": "commonjs",                   /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2017", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+
+    /* Strict Type-Checking Options */
+    "strict": true,                        /* Enable all strict type-checking options. */
+    "alwaysStrict": true,                  /* Parse in strict mode and emit "use strict" for each source file. */
+
+    /* Module Resolution Options */
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,  /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
+    "esModuleInterop": true,               /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
+  },
+}

@@ -1,0 +1,21 @@
+{
+  "name": "eliza-util",
+  "version": "1.0.0",
+  "keywords": [
+    "eliza"
+  ],
+  "author": "Richard Lea <chigix@zoho.com>",
+  "homepage": "https://github.com/chigix/eliza-instrumentality",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chigix/eliza-instrumentality.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chigix/eliza-instrumentality/issues"
+  },
+  "dependencies": {
+    "rxjs": "^6.5.3"
+  }
+}

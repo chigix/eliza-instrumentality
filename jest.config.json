@@ -1,14 +1,15 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": "src",
+  "moduleFileExtensions": ["js", "ts", "json"],
+  "rootDir": "packages",
   "testRegex": ".spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "moduleNameMapper": {
-    "^src/(.*)": "<rootDir>/$1",
-    "^@test/(.*)": "<rootDir>/../test/$1"
+    "^eliza-util": "<rootDir>/util/src"
   },
-  "coverageDirectory": "../coverage",
-  "testEnvironment": "node"
+  "modulePathIgnorePatterns": ["<rootDir>/(.*)/dist"],
+  "coverageReporters": ["html"],
+  "testEnvironment": "node",
+  "projects": ["<rootDir>/*/jest.config.json"]
 }

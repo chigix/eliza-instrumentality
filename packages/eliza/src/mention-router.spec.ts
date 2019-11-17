@@ -35,9 +35,9 @@ test('Match check for pre rule', () => {
   expect(
     matchDecomposition([mentions.everyone],
       ' everybody hates me ', '* @everyone *'),
-  ).toEqual(['', 'everybody']);
+  ).toEqual(['', 'everybody', 'hates me ']);
   expect(
     matchDecomposition([mentions.sad],
       ' I am unhappy ', '* @sad *'),
-  ).toEqual([' I am', 'unhappy']);
+  ).toEqual([' I am', 'unhappy', '']);
 });

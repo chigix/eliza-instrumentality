@@ -1,25 +1,29 @@
 {
-  "name": "eliza-inspire",
-  "version": "1.0.0",
-  "description": "Eliza Robot",
-  "main": "index.js",
+  "name": "eliza-instrumentality",
+  "private": true,
   "scripts": {
+    "build": "shx rm -rf ./packages/*/dist && gulp ts-compiling && gulp make-packages",
     "test": "jest --config ./jest.config.json --runInBand",
-    "start": "ts-node --project ./tsconfig.build.json ./src/index.ts"
+    "eliza": "ts-node --project ./tsconfig.build.json ./packages/shell/src/bin/eliza.js",
+    "publish": "lerna publish --contents dist"
   },
   "repository": "git@github.com:chigix/eliza-inspire.git",
   "author": "Richard Lea <https://github.com/chigix>",
   "license": "MIT",
-  "dependencies": {
-    "inquirer": "^7.0.0",
-    "lodash": "^4.17.15",
-    "rxjs": "^6.5.3"
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "@types/inquirer": "^6.5.0",
     "@types/jest": "^24.0.19",
-    "@types/lodash": "^4.14.144",
+    "@types/lodash": "^4.14.148",
+    "fancy-log": "^1.3.3",
+    "fs-extra": "^8.1.0",
+    "gulp": "^4.0.2",
+    "gulp-typescript": "^5.0.1",
     "jest": "^24.9.0",
+    "lerna": "^3.18.4",
+    "shx": "^0.3.2",
     "ts-jest": "^24.1.0",
     "ts-node": "^8.4.1",
     "tslint": "^5.20.0",

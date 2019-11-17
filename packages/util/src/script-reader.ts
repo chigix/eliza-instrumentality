@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { bindNodeCallback, Observable } from 'rxjs';
+import { bindNodeCallback } from 'rxjs';
 
 export function fromFile(filename: string, encoding = 'utf8') {
   const readFileAsObservable = bindNodeCallback(
