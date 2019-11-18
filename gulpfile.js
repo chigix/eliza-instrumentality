@@ -7,7 +7,7 @@ fs = require('fs-extra'),
 const PACKAGES_DIR = path.resolve(__dirname, './packages');
 const PACKAGE_TYPES = {
   NODE: ['eliza-util', 'eliza-core', 'eliza-shell'],
-  ANGULAR: ['docs-app'],
+  ANGULAR: ['playground'],
 };
 
 /**

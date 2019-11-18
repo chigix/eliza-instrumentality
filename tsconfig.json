@@ -4,6 +4,7 @@
   "compilerOptions": {
     "lib": [
       "es2018",
+      "dom",
     ],                             /* Specify library files to be included in the compilation. */
 
     /* Strict Type-Checking Options */
@@ -21,6 +22,9 @@
       "eliza-core": ["packages/eliza/src/index.ts"],
       "eliza-shell/*": ["packages/shell/src/*"],
       "eliza-util": ["packages/util/src/index.ts"],
-    }
+    },
+
+    /* Experimental Options */
+    "experimentalDecorators": true,
   },
 }

@@ -1,0 +1,6 @@
+{
+  "name": "typings",
+  "version": "1.0.0",
+  "private": true,
+  "typings": "./index.d.ts"
+}

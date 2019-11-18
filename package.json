@@ -2,6 +2,8 @@
   "name": "eliza-instrumentality",
   "private": true,
   "scripts": {
+    "start": "lerna run --stream start:playground",
+    "test:playground": "lerna run --stream test:playground",
     "build": "shx rm -rf ./packages/*/dist && gulp ts-compiling && gulp make-packages",
     "test": "jest --config ./jest.config.json --runInBand",
     "eliza": "ts-node --project ./tsconfig.build.json ./packages/shell/src/bin/eliza.js",
@@ -14,6 +16,22 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@angular-devkit/build-angular": "~0.803.19",
+    "@angular/cli": "~8.3.19",
+    "@angular/compiler-cli": "~8.2.14",
+    "@angular/language-service": "~8.2.14",
+    "@types/node": "~8.9.4",
+    "@types/jasmine": "~3.3.8",
+    "@types/jasminewd2": "~2.0.3",
+    "codelyzer": "^5.0.0",
+    "jasmine-core": "~3.4.0",
+    "jasmine-spec-reporter": "~4.2.1",
+    "karma": "~4.1.0",
+    "karma-chrome-launcher": "~2.2.0",
+    "karma-coverage-istanbul-reporter": "~2.0.1",
+    "karma-jasmine": "~2.0.1",
+    "karma-jasmine-html-reporter": "^1.4.0",
+    "protractor": "~5.4.0",
     "@types/inquirer": "^6.5.0",
     "@types/jest": "^24.0.19",
     "@types/lodash": "^4.14.148",
@@ -25,8 +43,8 @@
     "lerna": "^3.18.4",
     "shx": "^0.3.2",
     "ts-jest": "^24.1.0",
-    "ts-node": "^8.4.1",
+    "ts-node": "~7.0.0",
     "tslint": "^5.20.0",
-    "typescript": "^3.6.4"
+    "typescript": "~3.4.5"
   }
 }
