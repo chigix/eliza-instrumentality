@@ -1,6 +1,6 @@
 {
   "name": "playground",
-  "version": "0.0.0",
+  "version": "1.0.0-alpha",
   "scripts": {
     "ng": "ng",
     "start:playground": "ng serve",
@@ -22,7 +22,7 @@
     "@angular/platform-browser": "~8.2.14",
     "@angular/platform-browser-dynamic": "~8.2.14",
     "@angular/router": "~8.2.14",
-    "eliza-core": "1.0.0",
+    "eliza-core": "^1.0.0-alpha",
     "hammerjs": "^2.0.8",
     "rxjs": "^6.5.3",
     "simple-markdown": "^0.7.1",

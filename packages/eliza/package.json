@@ -1,6 +1,6 @@
 {
   "name": "eliza-core",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha",
   "description": "A rendition of ELIZA program engine by Weizenbaum sharable for all javascript environments",
   "keywords": [
     "nlp",
