@@ -1,0 +1,9 @@
+<mat-chip-list class="mat-chip-list-stacked">
+  <mat-chip class="message-log right" color="primary" selected="true">
+    How do you do. Please tell me what you are doing now.
+  </mat-chip>
+  <mat-chip class="message-log" *ngFor="let record of chattingContext"
+    [selected]="!record.isFromMe()" [class.right]="!record.isFromMe()">
+    {{ record.getRawText() }}
+  </mat-chip>
+</mat-chip-list>

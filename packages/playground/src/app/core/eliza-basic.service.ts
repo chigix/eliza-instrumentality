@@ -10,8 +10,7 @@ export class ElizaBasicService {
 
   private lastEliza?: Eliza;
 
-  constructor() {
-  }
+  constructor() { }
 
   async createEliza() {
     this.lastEliza = await loadEliza(of(ELIZA_SCRIPT));

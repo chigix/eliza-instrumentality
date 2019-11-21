@@ -1,0 +1,28 @@
+.full-size-card {
+  width: 95%;
+  height: 100%;
+}
+
+.chat-logs {
+  height: 700px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.chat-input {
+  display: flex;
+  flex-direction: column;
+
+  > * {
+    width: 100%;
+  }
+}
+
+.mat-chip-list-stacked mat-chip.message-log {
+  width: auto;
+  height: auto;
+
+  &.right {
+    margin-left: auto;
+  }
+}
