@@ -7,6 +7,7 @@ import WELCOME_MD from './0-Welcome.md';
 @Component({
   selector: 'app-sb-welcome-page',
   template: '<section class="mat-typography" [innerHTML]="notes"></section>',
+  styles: [':host { padding: 16px; display: block; }'],
 })
 export class WelcomeComponent implements OnInit {
 

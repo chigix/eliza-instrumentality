@@ -8,7 +8,8 @@
     "test:playground": "ng test",
     "lint:playground": "ng lint",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "release-storybook": "build-storybook && ngh --dir=storybook-static --cname=eliza.js.org --no-silent"
   },
   "private": true,
   "dependencies": {
