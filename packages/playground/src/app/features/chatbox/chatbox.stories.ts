@@ -69,7 +69,7 @@ storiesOf('ChatboxComponent', module)
       ],
       declarations: [ChatBoxStoryComponent],
     })
-  ).add('default', () => {
+  ).add('Eliza Test', () => {
     return {
       template: `<app-sb-chatbox></app-sb-chatbox>`,
     };

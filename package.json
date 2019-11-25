@@ -8,7 +8,8 @@
     "test": "jest --config ./jest.config.json --runInBand",
     "eliza": "ts-node --project ./tsconfig.build.json ./packages/shell/src/bin/eliza.js",
     "prepack": "yarn build",
-    "publish": "lerna publish --contents dist"
+    "publish": "lerna publish --contents dist",
+    "publish_docs": "lerna run --scope playground --stream release-storybook"
   },
   "repository": "git@github.com:chigix/eliza-inspire.git",
   "author": "Richard Lea <https://github.com/chigix>",
