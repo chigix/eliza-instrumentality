@@ -1,0 +1,14 @@
+{
+  "name": "playground",
+  "preset": "jest-preset-angular",
+  "rootDir": ".",
+  "setupFilesAfterEnv": ["<rootDir>/src/setupJest.ts"],
+  "snapshotSerializers": [
+    "jest-preset-angular/build/AngularNoNgAttributesSnapshotSerializer.js",
+    "jest-preset-angular/build/AngularSnapshotSerializer.js",
+    "jest-preset-angular/build/HTMLCommentSerializer.js"
+  ],
+  "modulePathIgnorePatterns": ["<rootDir>/dist"],
+  "coverageReporters": ["html"],
+  "coverageDirectory": "../../coverage/playground"
+}

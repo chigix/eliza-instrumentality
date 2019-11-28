@@ -1,3 +1,8 @@
+import * as fs from 'fs';
+import { SCRIPT_PATH } from 'eliza-util';
+jest.mock(`raw-loader!eliza-util/src/eliza.script`,
+  () => fs.readFileSync(SCRIPT_PATH + '/eliza.script', 'utf8'), { virtual: true });
+
 import { TestBed, async } from '@angular/core/testing';
 
 import { ElizaBasicService } from './eliza-basic.service';

@@ -1,13 +1,13 @@
 import { loadEliza } from './eliza';
-import { fromFile } from 'eliza-util';
+import { fromFile, SCRIPT_PATH } from 'eliza-util';
 
 test('Instantiate Eliza Main Class', async () => {
-  const eliza = await loadEliza(fromFile('eliza.script'));
+  const eliza = await loadEliza(fromFile(SCRIPT_PATH + '/eliza.script'));
   expect(eliza.toJson()).toMatchSnapshot();
 });
 
-test('simple initial conversation', async () => {
-  const eliza = await loadEliza(fromFile('eliza.script'));
+test.only('simple initial conversation', async () => {
+  const eliza = await loadEliza(fromFile(SCRIPT_PATH + '/eliza.script'));
   expect(eliza.getInitialStr())
     .toEqual('How do you do.  Please tell me your problem.');
   expect(eliza.processInput('Hello'))
@@ -21,7 +21,7 @@ test('simple initial conversation', async () => {
 });
 
 test('eliza script', async () => {
-  const eliza = await loadEliza(fromFile('eliza.script'));
+  const eliza = await loadEliza(fromFile(SCRIPT_PATH + '/eliza.script'));
   expect(eliza.processInput('Men are all alike.'))
     .toEqual('In what way ?');
   expect(eliza.processInput('They\'re always debugging us about something or other.'))

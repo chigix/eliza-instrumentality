@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
 import { loadEliza, Eliza } from 'eliza-core';
-import ELIZA_SCRIPT from 'raw-loader!./eliza.script';
+import ELIZA_SCRIPT from 'raw-loader!eliza-util/src/eliza.script';
 
 @Injectable({
   providedIn: 'root'

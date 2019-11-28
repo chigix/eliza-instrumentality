@@ -1,5 +1,7 @@
 {
+  "preset": "ts-jest",
   "name": "eliza-core",
   "rootDir": ".",
+  "modulePathIgnorePatterns": ["<rootDir>/dist"],
   "coverageDirectory": "../../coverage/eliza"
 }

@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatChipsModule } from '@angular/material/chips';
 
 import { ChatboxComponent } from './chatbox.component';
 
@@ -8,9 +9,9 @@ describe('ChatboxComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChatboxComponent ]
-    })
-    .compileComponents();
+      imports: [MatChipsModule],
+      declarations: [ChatboxComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

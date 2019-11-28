@@ -1,10 +1,10 @@
 import * as inquirer from 'inquirer';
 import { Subject as RxSubject } from 'rxjs';
 import { loadEliza } from 'eliza-core';
-import { fromFile } from 'eliza-util';
+import { fromFile, SCRIPT_PATH } from 'eliza-util';
 
 export async function run() {
-  const eliza = await loadEliza(fromFile('eliza.script'));
+  const eliza = await loadEliza(fromFile(SCRIPT_PATH + '/eliza.script'));
   let i = 0;
   const prompts = new RxSubject<inquirer.DistinctQuestion>();
   inquirer.prompt(prompts).ui.process.subscribe({

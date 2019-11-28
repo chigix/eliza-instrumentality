@@ -1,10 +1,5 @@
 import { Decomp } from './decompo';
 import { Key } from './key';
-import { KeyStack } from './key-stack';
-
-export function printKeyStack(keyStack: KeyStack) {
-  console.log(keyStack);
-}
 
 /**
  * Print the key and all under it.
@@ -21,7 +16,6 @@ export function snapshotKey(key: Key) {
   toPrint.rank = key.getRank();
   toPrint.decomps = (key.getDecomp() || []).map(d => snapshotDecomp(d));
   return toPrint;
-  // const log = 'key: ' + key.getKey() + ' ' + key.getRank();
 }
 
 /**

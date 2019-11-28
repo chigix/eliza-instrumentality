@@ -5,7 +5,6 @@
     "ng": "ng",
     "start:playground": "ng serve",
     "build:playground": "ng build",
-    "test:playground": "ng test",
     "lint:playground": "ng lint",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
@@ -13,21 +12,12 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "~8.2.14",
-    "@angular/cdk": "^8.2.3",
-    "@angular/common": "~8.2.14",
-    "@angular/compiler": "~8.2.14",
-    "@angular/core": "~8.2.14",
-    "@angular/forms": "~8.2.14",
-    "@angular/material": "^8.2.3",
-    "@angular/platform-browser": "~8.2.14",
-    "@angular/platform-browser-dynamic": "~8.2.14",
-    "@angular/router": "~8.2.14",
     "eliza-core": "^1.0.1",
     "hammerjs": "^2.0.8",
     "rxjs": "^6.5.3",
-    "simple-markdown": "^0.7.1",
-    "tslib": "^1.10.0",
-    "zone.js": "~0.9.1"
+    "simple-markdown": "^0.7.1"
+  },
+  "devDependencies": {
+    "eliza-util": "^1.0.1"
   }
 }
