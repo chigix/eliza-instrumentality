@@ -47,7 +47,7 @@ gulp.task('ts-compiling', cb => Promise.all(getPackages(PACKAGE_TYPES.NODE).map(
           esm2015: 'dist/_esm2015',
         }[tsconfig[1]];
         tsResult.js.pipe(gulp.dest(dest, { cwd: pkg.dir }));
-        gulp.src(['src/bin/*.js'], {
+        gulp.src(['src/**/*', '!src/**/*.ts'], {
           base: path.resolve(pkg.dir, 'src'),
           cwd: pkg.dir,
         }).pipe(gulp.dest(dest, { cwd: pkg.dir }));
