@@ -12,6 +12,7 @@ import * as PrePostUtil from './pre-post-utils';
 import * as printers from './printers';
 import {
   UnexpectedNumberException, UnknownRuleException, GotoLostException,
+  ScriptInterpretingError,
 } from './exceptions';
 
 const printSynonyms = true;
@@ -89,7 +90,7 @@ class ElizaImpl implements Eliza {
         pattern: '*reasmb: *',
         onMatched: (matchedParts: string[]) => {
           if (!this.lastReasemb) {
-            return console.error('Error: no last reasemb');
+            throw new ScriptInterpretingError('A Reasmb rule missing decomp rule');
           }
           this.lastReasemb.push(matchedParts[1]);
         },
@@ -98,7 +99,7 @@ class ElizaImpl implements Eliza {
         pattern: '*decomp: *',
         onMatched: (matchedParts: string[]) => {
           if (!this.lastDecomp) {
-            return console.error('Error: no last decomp');
+            throw new ScriptInterpretingError('A Decomp rule missing Key Initialization');
           }
           this.lastReasemb = [];
           const temp = matchedParts[1];
@@ -134,22 +135,23 @@ class ElizaImpl implements Eliza {
         },
       },
       {
-        pattern: '*synon: * *',
+        pattern: '*mention: *@* *',
         onMatched: (matchedParts: string[]) => {
+          const words = JSON.parse(`[${matchedParts[3]}]`);
           this.synonyms.push({
-            tag: matchedParts[1],
-            words: matchedParts[2].split(' '),
+            tag: matchedParts[2],
+            words: words.slice(1),
           });
         },
       },
       {
-        pattern: '*pre: * *',
+        pattern: '*pre: * => *',
         onMatched: (matchedParts: string[]) => {
           this.preList.push({ src: matchedParts[1], dest: matchedParts[2] });
         },
       },
       {
-        pattern: '*post: * *',
+        pattern: '*post: * => *',
         onMatched: (matchedParts: string[]) => {
           this.postList.push({ src: matchedParts[1], dest: matchedParts[2] });
         },
@@ -262,7 +264,6 @@ class ElizaImpl implements Eliza {
   public readScript(script$: Observable<string>) {
     return concat(script$, of('\n')).pipe(
       scan(({ buffer }, chunk) => {
-        // const split = (line + chunk).split('\n');
         const split = (buffer + chunk).split('\n');
         const rest = split.pop();
         return { buffer: rest || '', lines: split };
@@ -308,17 +309,17 @@ class ElizaImpl implements Eliza {
   /**
    * Decompose a string according to the given key.
    * Try each decomposition rule in order.
-   * If it matches, assemble a mentionTokenized and return it.
+   * If it matches, assemble a hyperDecomposition and return it.
    * If assembly fails, try another decomposition rule.
    * If assembly is a goto rule, return null and give the key.
-   * If assembly succeeds, return the mentionTokenized.
+   * If assembly succeeds, return the hyperDecomposition.
    */
   private decompose(key: Key, s: string) {
     for (const decomposition of (key.getDecomp() || [])) {
-      const mentionTokenized = mention
+      const hyperDecomposition = mention
         .matchDecomposition(this.synonyms, s, decomposition.getPattern());
-      if (mentionTokenized) {
-        const rep = this.assemble(decomposition, mentionTokenized);
+      if (hyperDecomposition) {
+        const rep = this.assemble(decomposition, hyperDecomposition.slottedTokens);
         if (!rep) {
           continue;
         }
@@ -367,8 +368,7 @@ class ElizaImpl implements Eliza {
         throw new UnexpectedNumberException(lines[1], 'reassembly');
       }
       if (n < 0 || n > reply.length) {
-        console.error(`Substitution number is bad ${lines[1]}`);
-        return null;
+        throw new Error(`Fatal Error: Substitution number is bad ${lines[1]}`);
       }
       reply[n] = PrePostUtil.translate(this.postList, reply[n]);
       work += `${lines[0]} ${reply[n]}`;

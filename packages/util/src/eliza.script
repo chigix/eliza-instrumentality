@@ -3,39 +3,39 @@ final: Goodbye.  Thank you for talking to me.
 quit: bye
 quit: goodbye
 quit: quit
-pre: dont don't
-pre: cant can't
-pre: wont won't
-pre: recollect remember
-pre: dreamt dreamed
-pre: dreams dream
-pre: maybe perhaps
-pre: how what
-pre: when what
-pre: certainly yes
-pre: machine computer
-pre: computers computer
-pre: were was
-pre: you're you are
-pre: i'm i am
-pre: same alike
-post: am are
-post: your my
-post: me you
-post: myself yourself
-post: yourself myself
-post: i you
-post: you I
-post: my your
-post: i'm you are
-synon: belief feel think believe wish
-synon: family mother mom father dad sister brother wife children child
-synon: desire want need
-synon: sad unhappy depressed sick
-synon: happy elated glad better
-synon: cannot can't
-synon: everyone everybody nobody noone
-synon: be am is are was
+pre: dont => don't
+pre: cant => can't
+pre: wont => won't
+pre: recollect => remember
+pre: dreamt => dreamed
+pre: dreams => dream
+pre: maybe => perhaps
+pre: how => what
+pre: when => what
+pre: certainly => yes
+pre: machine => computer
+pre: computers => computer
+pre: were => was
+pre: you're => you are
+pre: i'm => i am
+pre: same => alike
+post: am => are
+post: your => my
+post: me => you
+post: myself => yourself
+post: yourself => myself
+post: i => you
+post: you => I
+post: my => your
+post: i'm => you are
+mention: @belief "belief", "feel", "think", "believe", "wish"
+mention: @family "family", "mother", "mom", "father", "dad", "sister", "brother", "wife", "children", "child"
+mention: @desire "desire", "want", "need"
+mention: @sad    "sad", "unhappy", "depressed", "sick"
+mention: @happy  "happy", "elated", "glad", "better"
+mention: @cannot "cannot", "can't"
+mention: @everyone "everyone", "everybody", "nobody", "no one"
+mention: @be     "am", "is", "are", "was"
 key: xnone
   decomp: *
     reasmb: I'm not sure I understand you fully.
@@ -171,37 +171,37 @@ key: was 2
     reasmb: Perhaps I was (2).
     reasmb: What if I had been (2) ?
 key: i
-  decomp: * i @desire *
+  decomp: * i @desire[*] *
     reasmb: What would it mean to you if you got (3) ?
     reasmb: Why do you want (3) ?
     reasmb: Suppose you got (3) soon ?
     reasmb: What if you never got (3) ?
     reasmb: What would getting (3) mean to you ?
     reasmb: What does wanting (3) have to do with this discussion ?
-  decomp: * i am* @sad *
+  decomp: * i am* @sad[*] *
     reasmb: I am sorry to hear that you are (3).
     reasmb: Do you think that coming here will help you not to be (3) ?
     reasmb: I'm sure it's not pleasant to be (3).
     reasmb: Can you explain what made you (3) ?
-  decomp: * i am* @happy *
+  decomp: * i am* @happy[*] *
     reasmb: How have I helped you to be (3) ?
     reasmb: Has your treatment made you (3) ?
     reasmb: What makes you (3) just now ?
     reasmb: Can you explain why you are suddenly (3) ?
   decomp: * i was *
     reasmb: goto was
-  decomp: * i @belief * i *
+  decomp: * i @belief[*] * i *
     reasmb: Do you really think so ?
     reasmb: But you are not sure you (3).
     reasmb: Do you really doubt you (3) ?
-  decomp: * i* @belief *you *
+  decomp: * i* @belief[*] *you *
     reasmb: goto you
   decomp: * i am *
     reasmb: Is it because you are (2) that you came to me ?
     reasmb: How long have you been (2) ?
     reasmb: Do you believe it is normal to be (2) ?
     reasmb: Do you enjoy being (2) ?
-  decomp: * i @cannot *
+  decomp: * i @cannot[*] *
     reasmb: How do you think that you can't (3) ?
     reasmb: Have you tried ?
     reasmb: Perhaps you could (3) now.
@@ -265,7 +265,7 @@ key: my 2
     reasmb: Earlier you said your (2).
     reasmb: But your (2).
     reasmb: Does that have anything to do with the fact that your (2) ?
-  decomp: * my* @family *
+  decomp: * my* @family[*] *
     reasmb: Tell me more about your family.
     reasmb: Who else in your family (4) ?
     reasmb: Your (3) ?
@@ -319,7 +319,7 @@ key: why
   decomp: *
     reasmb: goto what
 key: everyone 2
-  decomp: * @everyone *
+  decomp: * @everyone[*] *
     reasmb: Really, (2) ?
     reasmb: Surely not (2).
     reasmb: Can you think of anyone in particular ?
@@ -355,5 +355,5 @@ key: alike 10
     reasmb: Could here really be some connection ?
     reasmb: How ?
 key: like 10
-  decomp: * @be *like *
+  decomp: * @be[*] *like *
     reasmb: goto alike

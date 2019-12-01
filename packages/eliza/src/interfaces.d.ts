@@ -5,6 +5,15 @@ export type MentionRoute = {
   words: Word[],
 };
 
+export type SlotDecomposition = string[];
+
+export type HyperDecomposition = {
+  slottedTokens: SlotDecomposition,
+  scopes: {
+    [key: string]: { text: string, mentionTag?: string, annotation?: string }
+  }
+};
+
 /**
  * Eliza pre-post entry (two words).
  * This is used to store pre transforms or post transforms.
