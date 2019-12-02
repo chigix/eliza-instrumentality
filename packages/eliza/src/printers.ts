@@ -19,15 +19,6 @@ export function snapshotKey(key: Key) {
 }
 
 /**
- * Print the key and rank only, not the rest.
- *
- * Corresponding to `Key.printKey(int indent)`
- */
-export function printKeySimple(indent: number) {
-  //
-}
-
-/**
  * Print out the decomp rule.
  *
  * @export

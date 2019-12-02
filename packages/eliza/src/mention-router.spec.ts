@@ -76,3 +76,13 @@ test('Match Multiple Mentions', () => {
       },
     });
 });
+
+test('Matching Scenario in Japanese', () => {
+  expect(matchDecomposition([mentions.everyone, mentions.family],
+    ' 私は研究者です ', '*私は*です')).toBeNull();
+  expect(matchDecomposition([mentions.everyone, mentions.family],
+    ' 私は研究者です ', '*私は*です*')).toStrictEqual({
+      slottedTokens: [' ', '研究者', ' '],
+      scopes: {},
+    });
+});

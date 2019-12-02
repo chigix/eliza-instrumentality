@@ -1,15 +1,17 @@
-import isString from 'lodash/isString';
 import { Observable, of, concat } from 'rxjs';
 import { scan, tap, concatMap, filter } from 'rxjs/operators';
 import { Decomp } from './decompo';
 import * as estring from './estring';
 import * as mention from './mention-router';
-import { PrePost, Reasemb, MentionRoute, Word } from './interfaces';
+import {
+  PrePost, Reasemb, MentionRoute, Word, HyperDecomposition,
+} from './interfaces';
 import { Key } from './key';
 import { GotoKey } from './key-goto';
 import { buildKeyStack } from './key-stack';
 import * as PrePostUtil from './pre-post-utils';
 import * as printers from './printers';
+import { notEmpty } from './utils';
 import {
   UnexpectedNumberException, UnknownRuleException, GotoLostException,
   ScriptInterpretingError,
@@ -29,6 +31,12 @@ export interface Eliza {
 
 export async function loadEliza(script$: Observable<string>): Promise<Eliza> {
   const eliza = new ElizaImpl();
+  await eliza.readScript(script$).toPromise();
+  return eliza;
+}
+
+export async function loadElizaInEnglish(script$: Observable<string>): Promise<Eliza> {
+  const eliza = new ElizaImpl(sentence => sentence.split(' '));
   await eliza.readScript(script$).toPromise();
   return eliza;
 }
@@ -55,20 +63,9 @@ class ElizaImpl implements Eliza {
   /* Flag whether finished */
   private finished = false;
 
-  constructor() {
-    // Empty Constructor
-  }
-
-  /**
-   * dispose
-   *
-   * TODO: Remove
-   */
-  public dispose() {
-    // anything here will be called automatically when
-    // the parent applet shuts down. for instance, this
-    // might shut down a thread used by this library.
-  }
+  constructor(
+    private readonly tokenizer?: (sentence: string) => Word[],
+  ) { }
 
   public getInitialStr() {
     return this.initialStr;
@@ -250,8 +247,8 @@ class ElizaImpl implements Eliza {
     //  No memory, reply with xnone.
     const key = this.keys.find(k => k.getKey() === 'xnone');
     if (key) {
-      const reply = this.decompose(key, s);
-      if (isString(reply)) { return reply; }
+      const context = this.decompose(key, s);
+      if (context && context.strRep) { return context.strRep; }
     }
 
     //  No xnone, just say anything.
@@ -289,60 +286,88 @@ class ElizaImpl implements Eliza {
 
       return this.finalStr;
     }
-    const keyStack = buildKeyStack(this.keys, s);
-    for (let i = 0; i < keyStack.getKeyTop(); i++) {
-      let reply = this.decompose(keyStack.getKey(i), s);
-      while (reply) {
-        //  If decomposition returned gotoKey, try it
-        if (reply instanceof GotoKey) {
-          const gotoKey = reply;
-          reply = this.decompose(gotoKey, s);
-          continue;
-        }
-        return reply;
-      }
+    if (this.tokenizer) {
+      let result: string = '';
+      return buildKeyStack(this.keys, this.tokenizer(s))
+        .find(key => {
+          const ctx = this.fullyDecompose(key, s);
+          if (ctx && ctx.strRep) {
+            result = ctx.strRep;
+            return true;
+          }
+          return false;
+        }) ? result : null;
     }
-
+    const sortedReplyContexts =
+      this.keys.map(key => this.fullyDecompose(key, s))
+        .filter(notEmpty).sort(
+          (ctxA, ctxB) => ctxA.matches.slottedTokens.join('').length
+            - ctxB.matches.slottedTokens.join('').length);
+    const filteredContext = sortedReplyContexts[0];
+    if (filteredContext && filteredContext.strRep) {
+      return filteredContext.strRep;
+    }
     return null;
   }
 
   /**
    * Decompose a string according to the given key.
    * Try each decomposition rule in order.
-   * If it matches, assemble a hyperDecomposition and return it.
+   * If it matches, assemble a ctx and return it.
    * If assembly fails, try another decomposition rule.
    * If assembly is a goto rule, return null and give the key.
-   * If assembly succeeds, return the hyperDecomposition.
+   * If assembly succeeds, return the ctx.
    */
   private decompose(key: Key, s: string) {
-    for (const decomposition of (key.getDecomp() || [])) {
-      const hyperDecomposition = mention
-        .matchDecomposition(this.synonyms, s, decomposition.getPattern());
-      if (hyperDecomposition) {
-        const rep = this.assemble(decomposition, hyperDecomposition.slottedTokens);
-        if (!rep) {
-          continue;
-        }
-        if (rep instanceof GotoKey) {
-          if (rep.getKey()) {
-            return rep;
-          }
-        } else {
-          return rep;
-        }
+    const f = this.assemble;
+    type ASSEMBLE_RESULT = ReturnType<typeof f>;
+    return (key.getDecomp() || []).map(decomposition => {
+      const matches = mention.matchDecomposition(this.synonyms, s, decomposition.getPattern());
+      if (!matches) {
+        return null;
       }
-    }
+      return {
+        decomposition, matches,
+        reply: null as ASSEMBLE_RESULT, strRep: null as string | null,
+      };
+    }).filter(notEmpty).find(ctx => {
+      ctx.reply = this.assemble(ctx.decomposition, ctx.matches.slottedTokens);
+      if (!ctx.reply) {
+        return false;
+      }
+      if (ctx.reply instanceof GotoKey) {
+        if (ctx.reply.getKey()) {
+          return true;
+        }
+      } else {
+        ctx.strRep = ctx.reply;
+        return true;
+      }
+      return false;
+    }) || null;
+  }
 
+  private fullyDecompose(key: Key, s: string) {
+    let decomposeCtx = this.decompose(key, s);
+    while (decomposeCtx) {
+      // If decomposition returned gotoKey, try it
+      if (decomposeCtx.reply instanceof GotoKey) {
+        const gotoKey = decomposeCtx.reply;
+        decomposeCtx = this.decompose(gotoKey, s);
+        continue;
+      }
+      return decomposeCtx;
+    }
     return null;
   }
 
   /**
-   * Assembly a reply from a decomp rule and the input.
+   * Assembly a decomposedTokens from a decomp rule and the input.
    * If the reassembly rule is goto, return null and give
    *   the gotoKey to use.
    * Otherwise return the response.
    */
-  private assemble(d: Decomp, reply: string[]) {
+  private assemble(d: Decomp, decomposedTokens: string[]) {
     let rule = d.nextRule();
     do {
       const lines = estring.match(rule, 'goto *');
@@ -367,11 +392,12 @@ class ElizaImpl implements Eliza {
       if (isNaN(n)) {
         throw new UnexpectedNumberException(lines[1], 'reassembly');
       }
-      if (n < 0 || n > reply.length) {
-        throw new Error(`Fatal Error: Substitution number is bad ${lines[1]}`);
+      if (n < 0 || n > decomposedTokens.length) {
+        throw new Error(
+          `Fatal Error: Substitution number is bad ${lines[1]} in ${d.getPattern()}`);
       }
-      reply[n] = PrePostUtil.translate(this.postList, reply[n]);
-      work += `${lines[0]} ${reply[n]}`;
+      const term = PrePostUtil.translate(this.postList, decomposedTokens[n]);
+      work += `${lines[0]} ${term}`;
     } while (true);
     work += rule;
     if (d.isMemoryKey()) {

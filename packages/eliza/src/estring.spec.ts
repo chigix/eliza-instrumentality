@@ -26,3 +26,11 @@ test('Match check for number detection', () => {
 test('Match check in comparing patterns', () => {
   expect(match('*', '*@* *')).toBeNull();
 });
+
+test('Match Japanese Patterns', () => {
+  expect(match('今日は気分悪いです', '*悪い*')).toStrictEqual([
+    '今日は気分', 'です']);
+  expect(match('*ですか', '*@*[*]*')).toBeNull();
+  expect(match(' 私は研究者です ', '*私は*です*')).toStrictEqual([
+    ' ', '研究者', ' ']);
+});

@@ -3,7 +3,7 @@ import { MentionRoute, HyperDecomposition } from './interfaces';
 import { NoMentionDefException } from './exceptions';
 import { cartesian } from './utils';
 
-function segmentPatternIntoProfile(pattern: string) {
+function segmentScope(pattern: string) {
   const patternProfile: Array<{ pattern: string, mentions?: string[] }> = [];
   let restToSegment = pattern;
   while (true) {
@@ -23,7 +23,7 @@ function segmentPatternIntoProfile(pattern: string) {
 
 function cartesianAllScopes(
   synonyms: MentionRoute[],
-  patternProfile: ReturnType<typeof segmentPatternIntoProfile>)
+  patternProfile: ReturnType<typeof segmentScope>)
   : Array<Array<{ pattern: string, mentionTag?: string, innerPattern?: string }>> {
   return patternProfile.reduce((agg, current) => {
     if (agg.length < 1) {
@@ -65,8 +65,8 @@ function cartesianAllScopes(
  */
 export function matchDecomposition<P extends keyof any>(
   synonyms: MentionRoute[], str: string, pat: string): HyperDecomposition | null {
-  const patternProfile = segmentPatternIntoProfile(pat);
-  if (patternProfile.length < 1) {
+  const patternProfile = segmentScope(pat);
+  if (patternProfile.length < 3) {
     // no tagged mentionRoute in decomposition pattern
     const simpleMatch = EString.match(str, pat);
     return simpleMatch ? { slottedTokens: simpleMatch, scopes: {} } : null;

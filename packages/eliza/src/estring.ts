@@ -122,7 +122,7 @@ function match_v1(str: string, pat: string): string[] | null {
   }
   if (i >= str.length && pos >= pat.length) { return matches; }
 
-  return [];
+  return null;
 }
 
 /**
