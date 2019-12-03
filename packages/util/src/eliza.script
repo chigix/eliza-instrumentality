@@ -3,31 +3,32 @@ final: Goodbye.  Thank you for talking to me.
 quit: bye
 quit: goodbye
 quit: quit
-pre: dont => don't
-pre: cant => can't
-pre: wont => won't
-pre: recollect => remember
-pre: dreamt => dreamed
-pre: dreams => dream
-pre: maybe => perhaps
-pre: how => what
-pre: when => what
-pre: certainly => yes
-pre: machine => computer
-pre: computers => computer
-pre: were => was
-pre: you're => you are
-pre: i'm => i am
-pre: same => alike
-post: am => are
-post: your => my
-post: me => you
-post: myself => yourself
-post: yourself => myself
-post: i => you
-post: you => I
-post: my => your
-post: i'm => you are
+pre: " dont " => " don't "
+pre: " cant " => " can't "
+pre: " wont " => " won't "
+pre: " recollect " => " remember "
+pre: " dreamt " => " dreamed "
+pre: " dreams " => " dream "
+pre: " maybe " => " perhaps "
+pre: " how " => " what "
+pre: " when " => " what "
+pre: " certainly " => " yes "
+pre: " machine " => " computer "
+pre: " computers " => " computer "
+pre: " were " => " was "
+pre: " you're " => " you are "
+pre: " i'm " => " i am "
+pre: " same " => " alike "
+post: " am " => " are "
+post: " your " => " my "
+post: " me " => " you "
+post: " myself " => " yourself "
+post: " yourself " => " myself "
+post: " i " => " you "
+post: " you " => " I "
+post: " my " => " your "
+post: " i'm " => " you are "
+post: " i am " => " you are "
 mention: @belief "belief", "feel", "think", "believe", "wish"
 mention: @family "family", "mother", "mom", "father", "dad", "sister", "brother", "wife", "children", "child"
 mention: @desire "desire", "want", "need"

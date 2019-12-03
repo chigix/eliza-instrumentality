@@ -144,13 +144,13 @@ class ElizaImpl implements Eliza {
       {
         pattern: '*pre: * => *',
         onMatched: (matchedParts: string[]) => {
-          this.preList.push({ src: matchedParts[1], dest: matchedParts[2] });
+          this.preList.push({ src: JSON.parse(matchedParts[1]), dest: JSON.parse(matchedParts[2]) });
         },
       },
       {
         pattern: '*post: * => *',
         onMatched: (matchedParts: string[]) => {
-          this.postList.push({ src: matchedParts[1], dest: matchedParts[2] });
+          this.postList.push({ src: JSON.parse(matchedParts[1]), dest: JSON.parse(matchedParts[2]) });
         },
       },
       {
