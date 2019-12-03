@@ -13,7 +13,7 @@ import { PrePost } from './interfaces';
  * Learned from `PrePostList.translate(String s)`
  */
 export function translate(prePosts: PrePost[], s: string) {
-  let work = estring.trim(s);
+  let work = ' ' + estring.trim(s) + ' ';
   let lines = [] as string[];
   const toReplace = prePosts.find(search => {
     const searchResult = estring.match(work, `*${search.src}*`);
@@ -28,5 +28,5 @@ export function translate(prePosts: PrePost[], s: string) {
       + toReplace.dest + translate(prePosts, lines[1]);
   }
 
-  return work;
+  return work.trim();
 }
