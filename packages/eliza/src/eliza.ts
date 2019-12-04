@@ -54,6 +54,7 @@ class ElizaImpl implements Eliza {
   private synonyms: MentionRoute[] = [];
   private preList: PrePost[] = [];
   private postList: PrePost[] = [];
+  private tweakList: PrePost[] = [];
   private initialStr = 'Hello.';
   private finalStr = 'Goodbye.';
   private quitList: Word[] = [];
@@ -151,6 +152,12 @@ class ElizaImpl implements Eliza {
         pattern: '*post: * => *',
         onMatched: (matchedParts: string[]) => {
           this.postList.push({ src: JSON.parse(matchedParts[1]), dest: JSON.parse(matchedParts[2]) });
+        },
+      },
+      {
+        pattern: '*tweak: * => *',
+        onMatched: (matchedParts: string[]) => {
+          this.tweakList.push({ src: JSON.parse(matchedParts[1]), dest: JSON.parse(matchedParts[2]) });
         },
       },
       {
@@ -406,6 +413,6 @@ class ElizaImpl implements Eliza {
       return null;
     }
 
-    return work;
+    return PrePostUtil.translate(this.tweakList, work);
   }
 }

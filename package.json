@@ -8,7 +8,7 @@
     "test": "jest --config ./jest.config.json --runInBand",
     "test:playground": "jest --config ./jest.config.json packages/playground --runInBand",
     "eliza": "ts-node --project ./tsconfig.base.json ./packages/shell/src/bin/eliza.js",
-    "prepublish": "yarn build",
+    "postversion": "yarn build && yarn build:script",
     "publish": "lerna publish --contents dist",
     "publish_docs": "lerna run --scope playground --stream release-storybook"
   },

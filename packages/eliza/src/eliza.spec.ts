@@ -53,4 +53,14 @@ test('eliza script', async () => {
   expect(eliza.processInput('Bullies.'))
     .toEqual('Does that have anything to do with the fact that your boyfriend made you come here ?');
 });
+
+test('Japanese Script Testing', async () => {
+  const eliza = await loadEliza(fromFile(SCRIPT_PATH + '/../../eliza-jp/dist/eliza.ipadic.script'));
+  expect(eliza.getInitialStr()).toEqual('ようこそ。どんなことがあったんですか？');
+  expect(eliza.processInput('こんにちは')).toEqual('こんにちは。お元気ですか');
+  expect(eliza.processInput('私は研究者です')).toEqual('あなたは 研究者 だと思っていますか ?');
+  expect(eliza.processInput('私はインターンへ行きたいです')).toEqual('あなたは インターンシップへ行きたい になりたいのですか ?');
+  expect(eliza.processInput('勉強のため、学校へ行きます')).toEqual('それは興味深い点ですね。それでどうなりました？');
+  expect(eliza.processInput('学校へ行ったら、勉強できます')).toEqual('あなたは行きたいのですか？');
+  expect(eliza.processInput('はい、分かりました。')).toEqual('あなたは結構ポジティブに見えます。');
 });
