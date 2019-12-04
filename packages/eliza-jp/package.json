@@ -1,0 +1,27 @@
+{
+  "name": "eliza-jp",
+  "version": "1.0.1",
+  "description": "Japanese Script for Eliza Interpreter",
+  "keywords": [
+    "japanese",
+    "nlp",
+    "tokenizer",
+    "eliza",
+    "weizenbaum"
+  ],
+  "author": "Richard Lea <chigix@zoho.com>",
+  "homepage": "https://eliza.js.org",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chigix/eliza-instrumentality.git"
+  },
+  "scripts": {
+    "build:dict": "PKG_PATH=$(npm prefix) ts-node --project ./tsconfig.json ./scripts/main.ts",
+    "build": "yarn build:dict"
+  },
+  "bugs": {
+    "url": "https://github.com/chigix/eliza-instrumentality/issues"
+  }
+}

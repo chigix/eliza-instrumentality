@@ -1,12 +1,14 @@
 const gulp = require('gulp'),
-  log = require('fancy-log');
-fs = require('fs-extra'),
+  log = require('fancy-log'),
+  fs = require('fs-extra'),
   path = require('path'),
+  del = require('del'),
+  vinylPaths = require('vinyl-paths'),
   ts = require('gulp-typescript');
 
 const PACKAGES_DIR = path.resolve(__dirname, './packages');
 const PACKAGE_TYPES = {
-  NODE: ['eliza-util', 'eliza-core', 'eliza-shell'],
+  NODE: ['eliza-util', 'eliza-core', 'eliza-shell', 'eliza-jp'],
   ANGULAR: ['playground'],
 };
 
@@ -36,8 +38,11 @@ gulp.task('ts-compiling', cb => Promise.all(getPackages(PACKAGE_TYPES.NODE).map(
       const tsconfigFile = path.resolve(pkg.dir, tsconfig[0]);
       log(`ts-compiling: ${tsconfigFile}`);
       const tsProject = ts.createProject(tsconfigFile);
+      const tsReplaceProject = ts.createProject(tsconfigFile);
       const tsResult = gulp.src(['src/**/*.ts', '!**/*.spec.ts'], { cwd: pkg.dir })
         .pipe(tsProject());
+      const tsReplace = gulp.src(['src-replace/**/*.ts'], { cwd: pkg.dir })
+        .pipe(tsReplaceProject());
       if (tsconfig[1] === 'types') {
         tsResult.dts.pipe(gulp.dest('dist', { cwd: pkg.dir }));
       } else {
@@ -52,6 +57,13 @@ gulp.task('ts-compiling', cb => Promise.all(getPackages(PACKAGE_TYPES.NODE).map(
           base: path.resolve(pkg.dir, 'src'),
           cwd: pkg.dir,
         }).pipe(gulp.dest(dest, { cwd: pkg.dir }));
+        tsReplace.js
+          .pipe(vinylPaths(async builtFile => {
+            await del(
+              path.resolve(pkg.dir, 'dist',
+                path.relative(pkg.dir + '/src-replace', builtFile)));
+          }))
+          .pipe(gulp.dest(dest, { cwd: pkg.dir, overwrite: true }));
       }
       resolve();
     }))

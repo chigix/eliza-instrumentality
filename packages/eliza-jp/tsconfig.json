@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "sourceRoot": "src",
+    "baseUrl": "scripts",
+    "resolveJsonModule": true,
+  },
+  "include": ["scripts/**/*"]
+}
