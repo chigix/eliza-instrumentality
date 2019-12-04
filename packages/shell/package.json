@@ -9,9 +9,6 @@
   "homepage": "https://github.com/chigix/eliza-instrumentality",
   "license": "MIT",
   "main": "./src/index.ts",
-  "files": [
-    "lib"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chigix/eliza-instrumentality.git"

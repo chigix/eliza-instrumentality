@@ -84,6 +84,7 @@ gulp.task('make-packages', cb => Promise.all(getPackages(PACKAGE_TYPES.NODE).map
     if (fs.existsSync(`${distPath}/_esm2015`)) {
       rootPackageJson.es2015 = './_esm2015/index.js';
     }
+    delete rootPackageJson.scripts;
     if (fs.existsSync(path.resolve(pkg.dir, 'README.md'))) {
       fs.copyFileSync(path.resolve(pkg.dir, 'README.md'), `${distPath}/README.md`);
     }
