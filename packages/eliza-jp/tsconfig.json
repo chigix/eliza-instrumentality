@@ -2,9 +2,10 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": false,
-    "sourceRoot": "src",
-    "baseUrl": "scripts",
     "resolveJsonModule": true,
+    "moduleResolution": "Node",
+    "module": "CommonJS",
+    "target": "ESNext",
   },
-  "include": ["scripts/**/*"]
+  "include": ["src/**/*", "scripts/**/*"],
 }

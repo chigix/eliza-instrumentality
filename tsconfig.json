@@ -22,6 +22,7 @@
       "eliza-core": ["packages/eliza/src/index.ts"],
       "eliza-shell/*": ["packages/shell/src/*"],
       "eliza-util": ["packages/util/src/index.ts"],
+      "eliza-jp": ["packages/eliza-jp/src/index.ts"],
     },
 
     /* Experimental Options */

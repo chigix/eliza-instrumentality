@@ -1,10 +1,33 @@
+import program from 'commander';
 import * as inquirer from 'inquirer';
+import * as fs from 'fs';
 import { Subject as RxSubject } from 'rxjs';
-import { loadEliza } from 'eliza-core';
+import { loadEliza, loadElizaInEnglish } from 'eliza-core';
 import { fromFile, SCRIPT_PATH } from 'eliza-util';
+import { IPADIC } from 'eliza-jp';
+
+import { PKG_ROOT } from './consts';
+
+const projectPackageJson = JSON.parse(
+  fs.readFileSync(PKG_ROOT + '/package.json', 'utf-8'),
+);
+
+program.version(projectPackageJson.version)
+  .description(projectPackageJson.description)
+  .usage('[options]')
+  .option('-j, --japanese', 'Launch Eliza with a default Japanese script.');
 
 export async function run() {
-  const eliza = await loadEliza(fromFile(SCRIPT_PATH + '/eliza.script'));
+  program.parse(process.argv);
+
+  const eliza = await (() => {
+    if (program.japanese) {
+      return loadEliza(fromFile(IPADIC));
+    } else {
+      return loadElizaInEnglish(fromFile(SCRIPT_PATH + '/eliza.script'));
+    }
+  })();
+
   let i = 0;
   const prompts = new RxSubject<inquirer.DistinctQuestion>();
   inquirer.prompt(prompts).ui.process.subscribe({
@@ -15,8 +38,9 @@ export async function run() {
       }
       const reply = eliza.processInput(answer);
       if (eliza.isFinished()) {
-        console.log(reply);
-        return prompts.complete();
+        return process.stdout.write(`${reply}\n`, 'utf8', () => {
+          prompts.complete();
+        });
       }
       prompts.next({
         type: 'input',
@@ -25,10 +49,11 @@ export async function run() {
       });
     },
     error: (err) => {
-      console.error(err);
+      process.stderr.write(err);
     },
     complete: () => {
-      console.log('Interactive session is complete. Good bye! 👋\n');
+      process.stdout
+        .write('Interactive session is complete. Good bye! 👋\n', 'utf8');
     },
   });
   prompts.next({

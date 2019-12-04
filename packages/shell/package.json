@@ -6,7 +6,7 @@
     "eliza"
   ],
   "author": "Richard Lea <chigix@zoho.com>",
-  "homepage": "https://github.com/chigix/eliza-instrumentality",
+  "homepage": "https://eliza.js.org",
   "license": "MIT",
   "main": "./src/index.ts",
   "repository": {
@@ -22,6 +22,7 @@
   "dependencies": {
     "commander": "^4.0.1",
     "eliza-core": "^1.1.0-alpha.1",
+    "eliza-jp": "^1.1.0-alpha.1",
     "eliza-util": "^1.1.0-alpha.1",
     "import-local": "^3.0.2",
     "inquirer": "^7.0.0",
