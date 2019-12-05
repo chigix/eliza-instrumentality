@@ -80,7 +80,7 @@ export class ChatBoxStoryComponent implements OnInit {
 
 }
 
-storiesOf('ChatboxComponent', module)
+storiesOf('MessageListComponent', module)
   .addDecorator(
     moduleMetadata({
       imports: [
