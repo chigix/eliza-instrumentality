@@ -57,6 +57,8 @@ export class ElizaScriptBuilder implements ScriptTemplate {
     script += 'pre: "のなまえは" => "の名前は"\n';
     script += 'pre: "のなまえが" => "の名前が"\n';
     script += 'pre: "のなまえを" => "の名前を"\n';
+    script += 'pre: "欲しい" => "ほしい"\n';
+    script += 'pre: "欲しかった" => "ほしかった"\n';
     script += 'post: "あなたの" => "僕の"\n';
     script += 'post: "私" => "あなた"\n';
     script += 'post: "自分" => "あなた自身"\n';
