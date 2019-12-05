@@ -1,5 +1,5 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
@@ -32,7 +32,7 @@ const ELIZA_TEST_SCRIPT = [
 @Component({
   selector: 'app-sb-message-list',
   template:
-    '<button mat-raised-button (click)="runNewEliza()">ELIZA TEST</button>'
+    `<button mat-raised-button (click)="runNewEliza()" *ngIf="mode=='eliza-en'">ELIZA TEST</button>`
     + '<app-message-list></app-message-list>'
     + '<app-input-space (messageSent)="processInput($event)"></app-input-space>',
 })
@@ -44,6 +44,8 @@ export class ChatBoxStoryComponent implements OnInit {
   @ViewChild(InputSpaceComponent, { static: true })
   private readonly inputComp!: InputSpaceComponent;
 
+  @Input() public mode: 'eliza-en' | 'eliza-jp' = 'eliza-en';
+
   private elizaInstance?: Eliza;
 
   constructor(
@@ -51,7 +53,22 @@ export class ChatBoxStoryComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
-    this.elizaInstance = await this.elizaService.createEliza('eliza-en');
+    switch (this.mode) {
+      case 'eliza-en':
+        this.elizaInstance = await this.elizaService.createEliza('eliza-en');
+        break;
+      case 'eliza-jp':
+        this.elizaInstance = await this.elizaService.createEliza('eliza-jp');
+        break;
+
+      default:
+        break;
+    }
+    if (this.elizaInstance) {
+      this.msgListComp.pushMessage(new ChattingRecord({
+        text: this.elizaInstance.getInitialStr(), fromUserInput: false,
+      }));
+    }
   }
 
   processInput(userInput: ChattingRecord) {
@@ -96,5 +113,9 @@ storiesOf('MessageListComponent', module)
   ).add('Eliza Test', () => {
     return {
       template: `<app-sb-message-list></app-sb-message-list>`,
+    };
+  }).add('イライザテスト', () => {
+    return {
+      template: `<app-sb-message-list mode="eliza-jp"></app-sb-message-list>`,
     };
   });
