@@ -5,20 +5,32 @@
     "lib": [
       "es2018",
       "dom",
-    ],                             /* Specify library files to be included in the compilation. */
-
+    ], /* Specify library files to be included in the compilation. */
     /* Strict Type-Checking Options */
-    "noImplicitAny": true,                 /* Raise error on expressions and declarations with an implied 'any' type. */
-    "strictNullChecks": true,              /* Enable strict null checks. */
-    "strictFunctionTypes": true,           /* Enable strict checking of function types. */
-    "noImplicitThis": true,                /* Raise error on 'this' expressions with an implied 'any' type. */
-    "noImplicitReturns": true,             /* Report error when not all code paths in function return a value. */
-
+    "noImplicitAny": true, /* Raise error on expressions and declarations with an implied 'any' type. */
+    "strictNullChecks": true, /* Enable strict null checks. */
+    "strictFunctionTypes": true, /* Enable strict checking of function types. */
+    "noImplicitThis": true, /* Raise error on 'this' expressions with an implied 'any' type. */
+    "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
+    "skipLibCheck": true,
     /* Module Resolution Options */
-    "allowSyntheticDefaultImports": true,  /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
+    "allowSyntheticDefaultImports": true, /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
     "esModuleInterop": true,
     "baseUrl": ".",
-
+    "paths": {
+      "eliza-core": [
+        "packages/eliza/src/index.ts"
+      ],
+      "eliza-shell/*": [
+        "packages/shell/src/*"
+      ],
+      "eliza-util": [
+        "packages/util/src/index.ts"
+      ],
+      "eliza-jp": [
+        "packages/eliza-jp/src/index.ts"
+      ],
+    },
     /* Experimental Options */
     "experimentalDecorators": true,
   },

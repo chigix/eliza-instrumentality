@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
+    // "baseUrl": "./",
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
@@ -14,7 +14,13 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "src/*": [ "packages/playground/src/*" ],
+      "eliza-core": [ "packages/eliza/src/index.ts" ],
+      "eliza-util": [ "packages/util/src/index.ts" ],
+      "eliza-jp": [ "packages/eliza-jp/src/index.ts" ],
+    },
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
