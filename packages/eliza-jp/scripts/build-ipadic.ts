@@ -1,6 +1,6 @@
 import * as iconv from 'iconv-lite';
 import * as fs from 'fs';
-import { Builder } from './template';
+import { ScriptTemplate } from './interfaces';
 import { VerbProfile, NounProfile, AdjProfile } from './interfaces';
 import { replaceAll } from './utils';
 
@@ -14,10 +14,11 @@ function toHiragana(str: string) {
   return replaceAll(str, k, h);
 }
 
-export async function build(paths: {
+export async function build(opts: {
   dicDir: string,
+  scriptTemplate: ScriptTemplate,
 }) {
-  const verbBin = fs.readFileSync(paths.dicDir + '/Verb.csv');
+  const verbBin = fs.readFileSync(opts.dicDir + '/Verb.csv');
   const verbCsv = iconv.decode(verbBin, 'EUC-JP');
   const verbProfiles: VerbProfile[] = verbCsv.split('\n').filter(line => line.length > 0)
     .map(line => line.split(',')).map(line => ({
@@ -28,7 +29,7 @@ export async function build(paths: {
       baseForm: line[10],
       reading: line[11],
     }));
-  const verbalBin = fs.readFileSync(paths.dicDir + '/Noun.verbal.csv');
+  const verbalBin = fs.readFileSync(opts.dicDir + '/Noun.verbal.csv');
   const verbalCsv = iconv.decode(verbalBin, 'EUC-JP');
   const verbalProfiles: NounProfile[] = verbalCsv.split('\n').filter(line => line.length > 0)
     .map(line => line.split(',')).map(line => ({
@@ -36,7 +37,7 @@ export async function build(paths: {
       reading: line[11],
       readingHiragana: toHiragana(line[11]),
     }));
-  const nounBin = fs.readFileSync(paths.dicDir + '/Noun.csv');
+  const nounBin = fs.readFileSync(opts.dicDir + '/Noun.csv');
   const nounCsv = iconv.decode(nounBin, 'EUC-JP');
   const nounProfiles: NounProfile[] = nounCsv.split('\n').filter(line => line.length > 0)
     .map(line => line.split(',')).map(line => ({
@@ -44,7 +45,7 @@ export async function build(paths: {
       reading: line[11],
       readingHiragana: toHiragana(line[11]),
     }));
-  const adjBin = fs.readFileSync(paths.dicDir + '/Adj.csv');
+  const adjBin = fs.readFileSync(opts.dicDir + '/Adj.csv');
   const adjCsv = iconv.decode(adjBin, 'EUC-JP');
   const adjProfiles: AdjProfile[] = adjCsv.split('\n').filter(line => line.length > 0)
     .map(line => line.split(',')).map(line => ({
@@ -53,7 +54,7 @@ export async function build(paths: {
       reading: line[11],
       readingHiragana: toHiragana(line[11]),
     }));
-  const builder = new Builder()
+  const builder = opts.scriptTemplate
     .addMention('@verbal', verbalProfiles
       .map(verbal => verbal.surface))
     .addMention('@adjIi', adjProfiles
@@ -118,5 +119,5 @@ export async function build(paths: {
   verbProfiles.filter(verb => verb.influenceForm === '連用形').forEach(verb => {
     builder.addCollocationFix(` ${verb.surface}-る `, `${verb.baseForm}`);
   });
-  return builder.compile();
+  return builder.compileToString();
 }

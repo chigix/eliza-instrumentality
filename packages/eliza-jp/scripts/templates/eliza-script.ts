@@ -1,4 +1,6 @@
-export class Builder {
+import { ScriptTemplate } from '../interfaces';
+
+export class ElizaScriptBuilder implements ScriptTemplate {
 
   private mentions: Array<{
     tag: string,
@@ -19,10 +21,12 @@ export class Builder {
 
   public addPostReplace(src: string, dest: string) {
     this.postReplaces.push({ src, dest });
+    return this;
   }
 
   public addCollocationFix(src: string, dest: string) {
     this.collocationFix.push({ src, dest });
+    return this;
   }
 
   public addMention(mentionTag: string, words: string[]) {
@@ -33,7 +37,7 @@ export class Builder {
   /**
    * compile
    */
-  public compile(): string {
+  public compileToString(): string {
     let script = 'initial: ようこそ。どんなことがあったんですか？\n';
     script += 'final: 今日はお疲れ様でした。\n';
     script += 'quit: さよなら\n';

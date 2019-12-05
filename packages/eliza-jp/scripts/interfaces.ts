@@ -1,5 +1,8 @@
-export interface Dictionary {
-  verbProfiles: VerbProfile[];
+export interface ScriptTemplate {
+  addPostReplace(src: string, dest: string): this;
+  addCollocationFix(src: string, dest: string): this;
+  addMention(mentionTag: string, words: string[]): this;
+  compileToString(): string;
 }
 
 export interface NounProfile {
