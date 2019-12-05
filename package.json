@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "start": "lerna run --stream start:playground",
+    "storybook": "lerna run --scope playground --stream storybook",
     "build": "shx rm -rf ./packages/*/dist && gulp buildPackages",
     "build:script": "lerna run --scope eliza-jp build",
     "test": "jest --config ./jest.config.json --runInBand",

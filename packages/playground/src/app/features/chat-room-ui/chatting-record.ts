@@ -3,18 +3,18 @@ import uniqueId from 'lodash/uniqueId';
 export class ChattingRecord {
 
   private rawText: string;
-  private fromMe: boolean;
+  private fromUserInput: boolean;
   private readonly recordId = uniqueId();
 
 
   constructor(msg: {
     text: string,
-    fromMe: boolean,
+    fromUserInput: boolean,
     // TODO: replace with a callback register further
     semanticPredicate?: string,
   }) {
     this.rawText = msg.text;
-    this.fromMe = msg.fromMe;
+    this.fromUserInput = msg.fromUserInput;
   }
 
   getRawText() {
@@ -22,7 +22,7 @@ export class ChattingRecord {
   }
 
   isFromMe() {
-    return this.fromMe;
+    return this.fromUserInput;
   }
 
   getId() {

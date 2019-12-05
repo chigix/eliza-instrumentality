@@ -1,12 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ChattingRecord } from './chatting-record';
+import { ChattingRecord } from '../chatting-record';
 
 @Component({
-  selector: 'app-chatbox',
-  templateUrl: './chatbox.component.html',
-  styleUrls: ['./chatbox.component.scss']
+  selector: 'app-message-list',
+  templateUrl: './message-list.component.html',
+  styleUrls: ['./message-list.component.scss']
 })
-export class ChatboxComponent implements OnInit {
+export class MessageListComponent implements OnInit {
 
   @Input() private chattingContext: ChattingRecord[] = [];
 

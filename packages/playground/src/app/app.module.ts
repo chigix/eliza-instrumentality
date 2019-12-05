@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ChatboxModule } from './features/chatbox';
+import { ChatRoomUiModule } from './features/chat-room-ui';
 
 @NgModule({
   declarations: [
@@ -12,7 +12,7 @@ import { ChatboxModule } from './features/chatbox';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    ChatboxModule,
+    ChatRoomUiModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

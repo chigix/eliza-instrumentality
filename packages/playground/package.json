@@ -13,11 +13,13 @@
   "private": true,
   "dependencies": {
     "eliza-core": "^1.1.0-alpha.1",
+    "eliza-jp": "^1.1.0-alpha.1",
     "hammerjs": "^2.0.8",
     "rxjs": "^6.5.3",
     "simple-markdown": "^0.7.1"
   },
   "devDependencies": {
-    "eliza-util": "^1.1.0-alpha.1"
+    "eliza-util": "^1.1.0-alpha.1",
+    "eliza-typings": "^1.1.0-alpha.1"
   }
 }
