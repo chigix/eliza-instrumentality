@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { Eliza } from 'eliza-core';
+import { Eliza, getAssembledReply } from 'eliza-core';
 
 import { ElizaBasicService } from 'src/app/core/eliza-basic.service';
 import {
@@ -76,7 +76,8 @@ export class ChatBoxStoryComponent implements OnInit {
       this.inputComp.clearInput();
       this.msgListComp.pushMessage(userInput);
       this.msgListComp.pushMessage(new ChattingRecord({
-        text: this.elizaInstance.processInput(userInput.getRawText()), fromUserInput: false,
+        text: getAssembledReply(
+          this.elizaInstance.processInput(userInput.getRawText()), 'I\m Down...'), fromUserInput: false,
       }));
     }
   }
@@ -91,7 +92,8 @@ export class ChatBoxStoryComponent implements OnInit {
         text: message, fromUserInput: true,
       }));
       this.msgListComp.pushMessage(new ChattingRecord({
-        text: eliza.processInput(message), fromUserInput: false,
+        text: getAssembledReply(
+          eliza.processInput(message), 'I\m Down...'), fromUserInput: false,
       }));
     });
   }

@@ -10,11 +10,13 @@ export function notEmpty<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined;
 }
 
-export function getAssembledReply(ctx?: ReassembleContext | null) {
+export function getAssembledReply(ctx: ReassembleContext | null): string | null;
+export function getAssembledReply(ctx: ReassembleContext | null, defaultMsg: string): string;
+export function getAssembledReply(ctx: ReassembleContext | null, defaultMsg?: string): string | null {
   if (ctx && ctx.assembled && ctx.assembled.reassembled) {
     return ctx.assembled.reassembled;
   }
-  return null;
+  return defaultMsg || null;
 }
 
 export function getAssembledContext(ctx?: ReassembleContext | null) {
