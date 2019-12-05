@@ -28,6 +28,7 @@ export interface Eliza {
   isFinished(): boolean;
   toJson(): void;
   processInput(s: string): ReassembleContext | null;
+  processHyperInput(s: string): ReassembleContext | null;
 }
 
 export async function loadEliza(script$: Observable<string>): Promise<Eliza> {
@@ -257,18 +258,7 @@ class ElizaImpl implements Eliza {
     return toPrint;
   }
 
-  /**
-   * Process a line of input
-   */
-  public processInput(s: string) {
-    //  Do some input transformations first.
-    s = estring.replaceAll(s,
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');
-    s = estring.replaceAll(s,
-      '@#$%^&*()_-+=~`{[}]|:;<>\\"', '                          ');
-    s = estring.replaceAll(s, ',?!', '...');
-    //  Compress out multiple space.
-    s = estring.compress(s);
+  public processHyperInput(s: string) {
     let matchedParts = estring.match(s, '*.*');
     //  Break apart sentences, and do each separately.
     while (matchedParts) {
@@ -297,6 +287,21 @@ class ElizaImpl implements Eliza {
 
     //  No xnone, just return null.
     return null;
+  }
+
+  /**
+   * Process a line of input
+   */
+  public processInput(s: string) {
+    //  Do some input transformations first.
+    s = estring.replaceAll(s,
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');
+    s = estring.replaceAll(s,
+      '@#$%^&*()_-+=~`{[}]|:;<>\\"', '                          ');
+    s = estring.replaceAll(s, ',?!', '...');
+    //  Compress out multiple space.
+    s = estring.compress(s);
+    return this.processHyperInput(s);
   }
 
   /**

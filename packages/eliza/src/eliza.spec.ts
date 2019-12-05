@@ -67,7 +67,7 @@ test('Japanese Script Testing', async () => {
   expect(getAssembledReply(eliza.processInput('はい、分かりました。'))).toEqual('あなたは結構ポジティブに見えます。');
 });
 
-test('Semantic Annotation Script', async () => {
+test.only('Semantic Annotation Script', async () => {
   const eliza = await loadEliza(fromFile(USER_STORY_COMP));
   expect(getAssembledContext(eliza.processInput('料理を勉強するため、料理教室へ通いたいです')))
     .toStrictEqual(
@@ -78,5 +78,17 @@ test('Semantic Annotation Script', async () => {
           userStoryA: '料理を勉強する', userStoryB: '料理教室へ通う',
         },
         reassembled: 'placeholder',
+      });
+  expect(getAssembledContext(eliza.processInput('はい')))
+    .toStrictEqual(
+      {
+        annotations: { replyNo: 'false', replyYes: 'true' },
+        reassembled: 'placeholder',
+      });
+  expect(getAssembledContext(eliza.processHyperInput('@confirm-dependency: 料理教室へ通うの => 料理を勉強するの')))
+    .toStrictEqual(
+      {
+        annotations: {},
+        reassembled: '料理教室へ通うの は 料理を勉強するの の前で終わる必要ありますか ?',
       });
 });

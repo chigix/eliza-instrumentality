@@ -174,21 +174,16 @@ export class UserStoryScript implements ScriptTemplate {
     script += '    reasmb: そうですね。\n';
     script += '    reasmb: 続きを教えてください。\n';
     script += 'key: xQuestion\n';
-    script += '  decomp: * @confirm-dependency: * => *\n';
-    script += '    reasmb: 確認： (2) は (3) の前で終わる必要ありますか ?\n';
-    script += '    reasmb: placeholder\n';
-    script += '  decomp: * @confirm-clarification: * => *\n';
-    script += '    reasmb: 確認： (2) は (3) を意図したものですか ?\n';
-    script += '    reasmb: placeholder\n';
-    script += '  decomp: * @request-user-story *\n';
+    script += '  decomp: *@confirm-dependency: * => *\n';
+    script += '    reasmb: (2) は (3) の前で終わる必要ありますか ?\n';
+    script += '  decomp: *@confirm-clarification: * => *\n';
+    script += '    reasmb: (2) は (3) を意図したものですか ?\n';
+    script += '  decomp: *@request-user-story *\n';
     script += '    reasmb: 今は何をやっていますか ?\n';
-    script += '    reasmb: placeholder\n';
-    script += '  decomp: * @request-purpose: *\n';
+    script += '  decomp: *@request-purpose: *\n';
     script += '    reasmb: 何のために、(3) をやっているのでしょうか教えてほしいです。\n';
-    script += '    reasmb: placeholder\n';
     script += '  decomp: *\n';
     script += '    reasmb: システムが混乱しちゃいました。。\n';
-    script += '    reasmb: placeholder\n';
 
     return script;
   }
