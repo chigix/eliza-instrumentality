@@ -1,5 +1,6 @@
 import { loadEliza, loadElizaInEnglish } from './eliza';
 import { fromFile, SCRIPT_PATH } from 'eliza-util';
+import { IPADIC } from 'eliza-jp';
 
 test('Instantiate Eliza Main Class', async () => {
   const eliza = await loadEliza(fromFile(SCRIPT_PATH + '/eliza.script'));
@@ -55,7 +56,7 @@ test('eliza script', async () => {
 });
 
 test('Japanese Script Testing', async () => {
-  const eliza = await loadEliza(fromFile(SCRIPT_PATH + '/../../eliza-jp/dist/eliza.ipadic.script'));
+  const eliza = await loadEliza(fromFile(IPADIC));
   expect(eliza.getInitialStr()).toEqual('ようこそ。どんなことがあったんですか？');
   expect(eliza.processInput('こんにちは')).toEqual('こんにちは。お元気ですか');
   expect(eliza.processInput('私は研究者です')).toEqual('あなたは 研究者 だと思っていますか ?');
