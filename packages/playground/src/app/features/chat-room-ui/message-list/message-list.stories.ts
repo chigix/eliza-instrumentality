@@ -7,8 +7,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { Eliza } from 'eliza-core';
 
 import { ElizaBasicService } from 'src/app/core/eliza-basic.service';
-import { ChattingRecord } from '../chatting-record';
-import { ChatRoomUiModule, MessageListComponent, InputSpaceComponent } from '../';
+import {
+  ChattingRecord, ChatRoomUiModule, MessageListComponent, InputSpaceComponent,
+} from '../';
 
 const ELIZA_TEST_SCRIPT = [
   'Men are all alike.',
