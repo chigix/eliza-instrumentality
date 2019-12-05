@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import links from './links.json';
 import { build as buildIpaDic } from './build-ipadic';
 import { ElizaScriptBuilder } from './templates/eliza-script';
+import { UserStoryScript } from './templates/user-story-script';
 
 const DIRS = {
   dist: process.env.PKG_PATH + '/dist',
@@ -25,5 +26,11 @@ const DIRS = {
     await buildIpaDic({
       dicDir: DIRS.cache + '/mecab-ipadic-2.7.0-20070801',
       scriptTemplate: new ElizaScriptBuilder(),
+    }));
+  fs.writeFileSync(
+    DIRS.dist + '/user-story-composer.script',
+    await buildIpaDic({
+      dicDir: DIRS.cache + '/mecab-ipadic-2.7.0-20070801',
+      scriptTemplate: new UserStoryScript(),
     }));
 })();

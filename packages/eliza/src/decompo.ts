@@ -1,4 +1,4 @@
-import { Reasemb } from './interfaces';
+import { Reassemble } from './Reassemble';
 import { NoReassemblyRuleException } from './exceptions';
 
 export class Decomp {
@@ -15,13 +15,13 @@ export class Decomp {
    *
    * @param {string} pattern The decomp pattern
    * @param {boolean} mem The mem flag
-   * @param {Reasemb[]} reasemb The reassembly list
+   * @param {Reassemble[]} reassembles The reassembly list
    * @memberof Decomp
    */
   constructor(
     private pattern: string,
     private mem: boolean,
-    private reasemb: Reasemb[]) { }
+    private reassembles: Reassemble[]) { }
 
   /**
    * pattern
@@ -41,7 +41,11 @@ export class Decomp {
    * getReasemb
    */
   public getReasemb() {
-    return this.reasemb;
+    return this.reassembles.filter(r => !r.isAnnotated());
+  }
+
+  public getAnnotates() {
+    return this.reassembles.filter(r => r.isAnnotated());
   }
 
   /**
@@ -52,17 +56,18 @@ export class Decomp {
    * from original code.
    */
   public nextRule() {
+    const reassembles = this.reassembles.filter(r => !r.isAnnotated());
     if (this.isMemoryKey()) {
-      this.currReasmb = Math.floor(Math.random() * this.reasemb.length);
+      this.currReasmb = Math.floor(Math.random() * reassembles.length);
     }
     // Increment and make sure it is within range.
-    if (++this.currReasmb >= this.reasemb.length) {
+    if (++this.currReasmb >= reassembles.length) {
       this.currReasmb = 0;
     }
-    if (this.reasemb.length < 1) {
+    if (reassembles.length < 1) {
       throw new NoReassemblyRuleException();
     }
 
-    return this.reasemb[this.currReasmb];
+    return reassembles[this.currReasmb];
   }
 }

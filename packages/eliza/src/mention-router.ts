@@ -102,8 +102,9 @@ export function matchDecomposition<P extends keyof any>(
       }
       innerDecomposition.slottedTokens
         .forEach(part => hyperDecomposeRes.slottedTokens.push(part));
-      hyperDecomposeRes.scopes[p.mentionTag] =
-        { text: p.pattern, mentionTag: p.mentionTag };
+      hyperDecomposeRes.scopes[p.mentionTag] = {
+        text: p.pattern, mentionTag: p.mentionTag,
+      };
       return;
     }
     for (let index = 0; index < expectedParts; index++) {

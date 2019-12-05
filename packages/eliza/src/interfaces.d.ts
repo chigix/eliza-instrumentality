@@ -1,4 +1,5 @@
-export type Reasemb = string;
+import { Decomp } from './decompo';
+
 export type Word = string;
 export type MentionRoute = {
   tag: Word,
@@ -10,8 +11,18 @@ export type SlotDecomposition = string[];
 export type HyperDecomposition = {
   slottedTokens: SlotDecomposition,
   scopes: {
-    [key: string]: { text: string, mentionTag?: string, annotation?: string }
+    [key: string]: { text: string, mentionTag?: string }
   }
+};
+
+export type ReassembleContext = {
+  decomposition?: Decomp, matches?: HyperDecomposition,
+  assembled: {
+    reassembled: string,
+    annotations?: {
+      [annotate: string]: string,
+    },
+  },
 };
 
 /**

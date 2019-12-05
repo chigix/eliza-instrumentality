@@ -109,7 +109,6 @@ export class ElizaScriptBuilder implements ScriptTemplate {
     script += 'key: predicate\n';
     script += '  decomp: *私は@adjIi[*]*\n';
     script += '    reasmb: あなたは (2) と思っていますか ?\n';
-    script += '    reasmb: あなたは (2)-と 思っていますか ?\n';
     script += '  decomp: *私は*です*\n';
     script += '    reasmb: あなたは (2) だと思っていますか ?\n';
     script += '    reasmb: あなたは (2) になりたいのですか ?\n';
@@ -158,7 +157,7 @@ export class ElizaScriptBuilder implements ScriptTemplate {
     script += '    reasmb: そうなったらどうしますか\n';
     script += 'key: if-rules\n';
     script += '  decomp: *@ifVerb[*たら]*\n';
-    script += '    reasmb: あなたは (2)-たい のですか？\n';
+    script += '    reasmb: あなたは (2)-たい-のですか？\n';
     script += '  decomp: *もし*ならば*\n';
     script += '    reasmb: あんたは (2) のことを思っていますか？\n';
     script += '  decomp: *ならば*\n';
@@ -233,18 +232,18 @@ export class ElizaScriptBuilder implements ScriptTemplate {
     script += '  decomp: *@verbal[*]したい*\n';
     script += '    reasmb: 近頃 (2)する予定があるのですか ?\n';
     script += '  decomp: *@desireVerb[*たい*]*\n';
-    script += '    reasmb: 近頃 (2)-る予定があるのですか ?\n';
+    script += '    reasmb: 近頃 (2)-る- 予定があるのですか ?\n';
     script += '  decomp: *@desireVerb[*たい*]*\n';
-    script += '    reasmb: 近頃 (2)-る ますとの予定があるのですか ?\n';
+    script += '    reasmb: 近頃 (2)-る- ますとの予定があるのですか ?\n';
     script += '  decomp: *私は*を@desireVerb[*たい*]*\n';
     script += '    reasmb: なぜ (2) を (3)たいのですか?\n';
     script += '  decomp: *私は*へ@desireVerb[*たい*]*\n';
-    script += '    reasmb: もし (3)-る ようになりましたら、何をしますか ?\n';
+    script += '    reasmb: もし (3)-る- ようになりましたら、何をしますか ?\n';
     script += '    reasmb: なぜ (3) たいですか?\n';
     script += '    reasmb: 近頃 (3) ますとの予定があるのですか ?\n';
     script += '    reasmb: もしずっと (3) ませんでしたら ?\n';
-    script += '    reasmb: あなたは (3)-る にはどんな意味を持つのでしょうか ?\n';
-    script += '    reasmb: あなたは (3)-る にあたって、なにを話したいのでしょうか ?\n';
+    script += '    reasmb: あなたは (3)-る- にはどんな意味を持つのでしょうか ?\n';
+    script += '    reasmb: あなたは (3)-る- にあたって、なにを話したいのでしょうか ?\n';
     script += 'key: sorry\n';
     script += '  decomp: *@sad[*]*\n';
     script += '    reasmb: すいませんでした、(2) のことを話してもらって\n';
@@ -369,7 +368,7 @@ export class ElizaScriptBuilder implements ScriptTemplate {
     script += '    reasmb: goto what\n';
     script += '  decomp: *なぜ*@negativeVerb[*ない]んですか*\n';
     //             reasmb: Do you think you should be able to (2) ?
-    script += '    reasmb: なぜ (2)-たい と思うのですか ?\n';
+    script += '    reasmb: なぜ (2)-たい- と思うのですか ?\n';
     script += '  decomp: *なぜ*@negativeVerb[*ない]のですか*\n';
     //             Do you believe this will help you to (2) ?
     script += '    reasmb: あなたは (2) に役に立つと思うのですか ?\n';

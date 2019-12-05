@@ -4,3 +4,4 @@ export * from './no-mention-def.exception';
 export * from './no-reassemb-rule.exception';
 export * from './unknown-rule.exception';
 export * from './goto-lost.exception';
+export * from './duplicate-annotate.exception';

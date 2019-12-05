@@ -1,10 +1,11 @@
 import { Observable, of, concat } from 'rxjs';
 import { scan, tap, concatMap, filter } from 'rxjs/operators';
 import { Decomp } from './decompo';
+import { Reassemble } from './Reassemble';
 import * as estring from './estring';
 import * as mention from './mention-router';
 import {
-  PrePost, Reasemb, MentionRoute, Word, HyperDecomposition,
+  PrePost, MentionRoute, Word, ReassembleContext,
 } from './interfaces';
 import { Key } from './key';
 import { GotoKey } from './key-goto';
@@ -14,7 +15,7 @@ import * as printers from './printers';
 import { notEmpty } from './utils';
 import {
   UnexpectedNumberException, UnknownRuleException, GotoLostException,
-  ScriptInterpretingError,
+  ScriptInterpretingError, DuplicateAnnotateException,
 } from './exceptions';
 
 const printSynonyms = true;
@@ -26,7 +27,7 @@ export interface Eliza {
   getInitialStr(): string;
   isFinished(): boolean;
   toJson(): void;
-  processInput(s: string): string;
+  processInput(s: string): ReassembleContext | null;
 }
 
 export async function loadEliza(script$: Observable<string>): Promise<Eliza> {
@@ -54,12 +55,15 @@ class ElizaImpl implements Eliza {
   private synonyms: MentionRoute[] = [];
   private preList: PrePost[] = [];
   private postList: PrePost[] = [];
+  private annotates: string[] = [];
+  // TODO: should be treated as token translate in postList
+  // for which, template should be easy to delimit number places
   private tweakList: PrePost[] = [];
   private initialStr = 'Hello.';
   private finalStr = 'Goodbye.';
   private quitList: Word[] = [];
   private lastDecomp: Decomp[] = [];
-  private lastReasemb: Reasemb[] | null = [];
+  private lastReasemb: Reassemble[] | null = [];
 
   /* Flag whether finished */
   private finished = false;
@@ -85,16 +89,17 @@ class ElizaImpl implements Eliza {
   private collect(s: string) {
     const matchedPattern = [
       {
-        pattern: '*reasmb: *',
+        tryMatch: (testStr: string) => estring.match(testStr, '*reasmb: *'),
         onMatched: (matchedParts: string[]) => {
           if (!this.lastReasemb) {
             throw new ScriptInterpretingError('A Reasmb rule missing decomp rule');
           }
-          this.lastReasemb.push(matchedParts[1]);
+          this.lastReasemb.push(new Reassemble(
+            matchedParts[1], this.lastDecomp[this.lastDecomp.length - 1]));
         },
       },
       {
-        pattern: '*decomp: *',
+        tryMatch: (testStr: string) => estring.match(testStr, '*decomp: *'),
         onMatched: (matchedParts: string[]) => {
           if (!this.lastDecomp) {
             throw new ScriptInterpretingError('A Decomp rule missing Key Initialization');
@@ -109,7 +114,7 @@ class ElizaImpl implements Eliza {
         },
       },
       {
-        pattern: '*key: * #*',
+        tryMatch: (testStr: string) => estring.match(testStr, '*key: * #*'),
         onMatched: (matchedParts: string[]) => {
           this.lastDecomp = [];
           this.lastReasemb = null;
@@ -125,7 +130,7 @@ class ElizaImpl implements Eliza {
         },
       },
       {
-        pattern: '*key: *',
+        tryMatch: (testStr: string) => estring.match(testStr, '*key: *'),
         onMatched: (matchedParts: string[]) => {
           this.lastDecomp = [];
           this.lastReasemb = null;
@@ -133,7 +138,7 @@ class ElizaImpl implements Eliza {
         },
       },
       {
-        pattern: '*mention: *@* *',
+        tryMatch: (testStr: string) => estring.match(testStr, '*mention: *@* *'),
         onMatched: (matchedParts: string[]) => {
           const words = JSON.parse(`[${matchedParts[3]}]`);
           this.synonyms.push({
@@ -143,43 +148,71 @@ class ElizaImpl implements Eliza {
         },
       },
       {
-        pattern: '*pre: * => *',
+        tryMatch: (testStr: string) => estring.match(testStr, '*annotate: *'),
+        onMatched: (matchedParts: string[]) => {
+          const tag = matchedParts[1].trim();
+          if (tag.length < 1 || this.annotates.find(w => w === tag)) {
+            throw new DuplicateAnnotateException(tag);
+          }
+          this.annotates.push(tag);
+        },
+      },
+      {
+        tryMatch: (testStr: string) => estring.match(testStr, '*pre: * => *'),
         onMatched: (matchedParts: string[]) => {
           this.preList.push({ src: JSON.parse(matchedParts[1]), dest: JSON.parse(matchedParts[2]) });
         },
       },
       {
-        pattern: '*post: * => *',
+        tryMatch: (testStr: string) => estring.match(testStr, '*post: * => *'),
         onMatched: (matchedParts: string[]) => {
           this.postList.push({ src: JSON.parse(matchedParts[1]), dest: JSON.parse(matchedParts[2]) });
         },
       },
       {
-        pattern: '*tweak: * => *',
+        tryMatch: (testStr: string) => estring.match(testStr, '*tweak: * => *'),
         onMatched: (matchedParts: string[]) => {
           this.tweakList.push({ src: JSON.parse(matchedParts[1]), dest: JSON.parse(matchedParts[2]) });
         },
       },
       {
-        pattern: '*initial: *',
+        tryMatch: (testStr: string) => estring.match(testStr, '*initial: *'),
         onMatched: (matchedParts: string[]) => {
           this.initialStr = matchedParts[1];
         },
       },
       {
-        pattern: '*final: *',
+        tryMatch: (testStr: string) => estring.match(testStr, '*final: *'),
         onMatched: (matchedParts: string[]) => {
           this.finalStr = matchedParts[1];
         },
       },
       {
-        pattern: '*quit: *',
+        tryMatch: (testStr: string) => estring.match(testStr, '*quit: *'),
         onMatched: (matchedParts: string[]) => {
           this.quitList.push(` ${matchedParts[1]} `);
         },
       },
-    ].find(({ pattern, onMatched }) => {
-      const matchedParts = estring.match(s, pattern);
+      {
+        tryMatch: (testStr: string) => {
+          const parts = estring.match(testStr, '*: *');
+          if (parts && this.annotates.indexOf(estring.trim(parts[0])) > -1) {
+            return parts;
+          }
+          return null;
+        },
+        onMatched: (matchedParts: string[]) => {
+          const instruction = estring.trim(matchedParts[0]);
+          if (!this.lastReasemb) {
+            throw new ScriptInterpretingError(
+              'An annotated Reasmb rule missing decomp rule');
+          }
+          this.lastReasemb.push(new Reassemble(
+            matchedParts[1], this.lastDecomp[this.lastDecomp.length - 1], instruction));
+        },
+      },
+    ].find(({ tryMatch, onMatched }) => {
+      const matchedParts = tryMatch(s);
       if (matchedParts) {
         onMatched(matchedParts);
         return true;
@@ -250,16 +283,20 @@ class ElizaImpl implements Eliza {
     }
     //  Nothing matched, so try memory.
     const m = this.mem.shift();
-    if (m) { return m; }
+    if (m) {
+      return { assembled: { reassembled: m } };
+    }
     //  No memory, reply with xnone.
     const key = this.keys.find(k => k.getKey() === 'xnone');
     if (key) {
-      const context = this.decompose(key, s);
-      if (context && context.strRep) { return context.strRep; }
+      const context = this.fullyDecompose(key, s);
+      if (context && context.assembled) {
+        return context;
+      }
     }
 
-    //  No xnone, just say anything.
-    return 'I am at a loss for words.';
+    //  No xnone, just return null.
+    return null;
   }
 
   /**
@@ -285,21 +322,21 @@ class ElizaImpl implements Eliza {
    * (3) Scan sentence for keys, build key stack.
    * (4) Try decompositions for each key.
    */
-  private sentence(s: string): string | null {
+  private sentence(s: string): ReassembleContext | null {
     s = PrePostUtil.translate(this.preList, s);
     s = estring.pad(s);
     if (this.quitList.indexOf(s) >= 0) {
       this.finished = true;
 
-      return this.finalStr;
+      return { assembled: { reassembled: this.finalStr } };
     }
     if (this.tokenizer) {
-      let result: string = '';
+      let result: ReassembleContext | null = null;
       return buildKeyStack(this.keys, this.tokenizer(s))
         .find(key => {
           const ctx = this.fullyDecompose(key, s);
-          if (ctx && ctx.strRep) {
-            result = ctx.strRep;
+          if (ctx) {
+            result = ctx;
             return true;
           }
           return false;
@@ -308,13 +345,10 @@ class ElizaImpl implements Eliza {
     const sortedReplyContexts =
       this.keys.map(key => this.fullyDecompose(key, s))
         .filter(notEmpty).sort(
-          (ctxA, ctxB) => ctxA.matches.slottedTokens.join('').length
-            - ctxB.matches.slottedTokens.join('').length);
-    const filteredContext = sortedReplyContexts[0];
-    if (filteredContext && filteredContext.strRep) {
-      return filteredContext.strRep;
-    }
-    return null;
+          (ctxA, ctxB) =>
+            (ctxA.matches || { slottedTokens: [s] }).slottedTokens.join('').length
+            - (ctxB.matches || { slottedTokens: [s] }).slottedTokens.join('').length);
+    return sortedReplyContexts[0] || null;
   }
 
   /**
@@ -326,8 +360,7 @@ class ElizaImpl implements Eliza {
    * If assembly succeeds, return the ctx.
    */
   private decompose(key: Key, s: string) {
-    const f = this.assemble;
-    type ASSEMBLE_RESULT = ReturnType<typeof f>;
+    const ASSEMBLE_FUNC = this.assemble;
     return (key.getDecomp() || []).map(decomposition => {
       const matches = mention.matchDecomposition(this.synonyms, s, decomposition.getPattern());
       if (!matches) {
@@ -335,84 +368,93 @@ class ElizaImpl implements Eliza {
       }
       return {
         decomposition, matches,
-        reply: null as ASSEMBLE_RESULT, strRep: null as string | null,
+        assembled: null as ReturnType<typeof ASSEMBLE_FUNC>,
       };
     }).filter(notEmpty).find(ctx => {
-      ctx.reply = this.assemble(ctx.decomposition, ctx.matches.slottedTokens);
-      if (!ctx.reply) {
+      ctx.assembled = this.assemble(ctx.decomposition, ctx.matches.slottedTokens);
+      if (!ctx.assembled) {
         return false;
       }
-      if (ctx.reply instanceof GotoKey) {
-        if (ctx.reply.getKey()) {
+      if (ctx.assembled instanceof GotoKey) {
+        if (ctx.assembled.getKey()) {
           return true;
         }
       } else {
-        ctx.strRep = ctx.reply;
         return true;
       }
       return false;
     }) || null;
   }
 
-  private fullyDecompose(key: Key, s: string) {
+  private fullyDecompose(key: Key, s: string): ReassembleContext | null {
     let decomposeCtx = this.decompose(key, s);
     while (decomposeCtx) {
       // If decomposition returned gotoKey, try it
-      if (decomposeCtx.reply instanceof GotoKey) {
-        const gotoKey = decomposeCtx.reply;
+      if (decomposeCtx.assembled instanceof GotoKey) {
+        const gotoKey = decomposeCtx.assembled;
         decomposeCtx = this.decompose(gotoKey, s);
         continue;
       }
-      return decomposeCtx;
+      if (!decomposeCtx.assembled) {
+        return null;
+      }
+      const assembledResult = decomposeCtx.assembled;
+      assembledResult.reassembled = PrePostUtil
+        .translate(this.tweakList, assembledResult.reassembled);
+      Object.keys(assembledResult.annotations).forEach(k => {
+        assembledResult.annotations[k] = PrePostUtil
+          .translate(this.tweakList, assembledResult.annotations[k]);
+      });
+      return {
+        decomposition: decomposeCtx.decomposition,
+        matches: decomposeCtx.matches,
+        assembled: assembledResult,
+      };
     }
     return null;
   }
 
   /**
-   * Assembly a decomposedTokens from a decomp rule and the input.
-   * If the reassembly rule is goto, return null and give
+   * Assembly a decomposedTokens from a decomp ruleTemplate and the input.
+   * If the reassembly ruleTemplate is goto, return null and give
    *   the gotoKey to use.
    * Otherwise return the response.
    */
-  private assemble(d: Decomp, decomposedTokens: string[]) {
-    let rule = d.nextRule();
-    do {
-      const lines = estring.match(rule, 'goto *');
-      if (lines) {
-        const gotoKey = this.keys.find(k => k.getKey() === lines[0]);
-        //  goto rule -- set gotoKey and return false.
-        if (gotoKey && gotoKey.getKey()) {
-          return new GotoKey(gotoKey);
-        }
-        throw new GotoLostException(rule);
+  private assemble(d: Decomp, decomposedTokens: string[]): {
+    reassembled: string,
+    annotations: {
+      [annotate: string]: string,
+    },
+  } | GotoKey | null {
+    const rule = d.nextRule();
+    const assembledResult = rule.assemble(
+      decomposedTokens.map(token => PrePostUtil.translate(this.postList, token)));
+    if (assembledResult.gotoKey && assembledResult.gotoKey.length > 0) {
+      const gotoKey = this.keys.find(k => k.getKey() === assembledResult.gotoKey);
+      //  goto ruleTemplate -- set gotoKey and return false.
+      if (gotoKey && gotoKey.getKey()) {
+        return new GotoKey(gotoKey);
       }
-    } while (0);
-    let work = '';
-    do {
-      const lines = estring.match(rule, '* (#)*');
-      if (!lines) {
-        break;
-      }
-      //  reassembly rule with number substitution
-      rule = lines[2];        // there might be more
-      const n = parseInt(lines[1], 10) - 1;
-      if (isNaN(n)) {
-        throw new UnexpectedNumberException(lines[1], 'reassembly');
-      }
-      if (n < 0 || n > decomposedTokens.length) {
-        throw new Error(
-          `Fatal Error: Substitution number is bad ${lines[1]} in ${d.getPattern()}`);
-      }
-      const term = PrePostUtil.translate(this.postList, decomposedTokens[n]);
-      work += `${lines[0]} ${term}`;
-    } while (true);
-    work += rule;
-    if (d.isMemoryKey()) {
-      this.mem.push(work);
-
+      throw new GotoLostException(rule.getTemplate());
+    }
+    if (!assembledResult.result) {
       return null;
     }
+    if (d.isMemoryKey()) {
+      this.mem.push(assembledResult.result);
+      return null;
+    }
+    return {
+      reassembled: assembledResult.result,
+      annotations: d.getAnnotates()
+        .map(annotate => annotate.assemble(decomposedTokens))
+        .reduce((reduced, current) => {
+          if (current.annotation) {
+            reduced[current.annotation] = current.result + '';
+          }
+          return reduced;
+        }, {} as { [an: string]: string }),
+    };
 
-    return PrePostUtil.translate(this.tweakList, work);
   }
 }

@@ -36,7 +36,9 @@ export async function run() {
       if (!answer || answer.length < 1) {
         return prompts.complete();
       }
-      const reply = eliza.processInput(answer);
+      const reply = (eliza.processInput(answer)
+        || { assembled: { reassembled: 'I am at a loss for words.' } })
+        .assembled.reassembled;
       if (eliza.isFinished()) {
         return process.stdout.write(`${reply}\n`, 'utf8', () => {
           prompts.complete();

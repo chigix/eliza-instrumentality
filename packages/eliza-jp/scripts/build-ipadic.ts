@@ -56,68 +56,68 @@ export async function build(opts: {
     }));
   const builder = opts.scriptTemplate
     .addMention('@verbal', verbalProfiles
-      .map(verbal => verbal.surface))
+      .map(verbal => verbal.surface).sort((a, b) => b.length - a.length))
+    .addMention('@rawVerb', verbProfiles
+      .filter(verb => verb.influenceForm === '基本形')
+      .map(verb => verb.surface).sort((a, b) => b.length - a.length))
     .addMention('@adjIi', adjProfiles
       .filter(adj => adj.influenceForm === '基本形')
-      .map(adj => adj.surface))
+      .map(adj => adj.surface).sort((a, b) => b.length - a.length))
     .addMention('@ifVerb', verbProfiles
       .filter(verb => ['仮定形', '連用タ接続'].indexOf(verb.influenceForm))
-      .map(verb => verb.surface + 'たら'))
+      .map(verb => verb.surface + 'たら').sort((a, b) => b.length - a.length))
     .addMention('@negativeVerb', verbProfiles
       .filter(verb => verb.influenceForm === '未然形')
       .map(verb => verb.surface + 'ない').concat(
         verbProfiles.filter(verb => verb.influenceForm === '連用形')
           .map(verb => verb.surface + 'ません'),
-      ))
+      ).sort((a, b) => b.length - a.length))
     .addMention('@desireVerb', verbProfiles
       .filter(verb => verb.influenceForm === '連用形')
-      .map(verb => verb.surface + 'たい'))
+      .map(verb => verb.surface + 'たい').sort((a, b) => b.length - a.length))
     .addMention('@desireVerbHoshii', verbProfiles
       .filter(verb => verb.influenceForm === '連用タ接続')
       .map(verb => [
         verb.surface + 'てほしい', verb.surface + 'でほしい',
         verb.surface + 'てほしかった', verb.surface + 'でほしかった',
-        verb.surface + 'て欲しい', verb.surface + 'で欲しい',
-        verb.surface + 'て欲しかった', verb.surface + 'で欲しかった',
-      ].join(','))
-      .join(',').split(','))
+      ].join(',')).join(',').split(',').sort((a, b) => b.length - a.length))
     .addMention('@doing', verbProfiles
       .filter(verb => verb.influenceForm === '連用タ接続')
       .map(verb => [
         verb.surface + 'ています', verb.surface + 'でいます',
         verb.surface + 'ている', verb.surface + 'でいる',
       ].join(','))
-      .join(',').split(','))
+      .join(',').split(',').sort((a, b) => b.length - a.length))
     .addMention('@wasDoing', verbProfiles
       .filter(verb => verb.influenceForm === '連用タ接続')
       .map(verb => [
         verb.surface + 'ていました', verb.surface + 'でいました',
         verb.surface + 'ていた', verb.surface + 'でいた',
       ].join(','))
-      .join(',').split(','))
+      .join(',').split(',').sort((a, b) => b.length - a.length))
     .addMention('@belief', ['思う', '信じる', '考える', '願う']
       .map(verb => verbProfiles.find(w =>
         w.baseForm === verb && w.influenceForm === '連用タ接続'))
       .filter(notEmpty).map(profile => [
         profile.surface + 'ています', profile.surface + 'ている', profile.baseForm,
-      ].join(',')).join(',').split(','))
+      ].join(',')).join(',').split(',').sort((a, b) => b.length - a.length))
     .addMention('@family', ['家族', 'お母さん', '母親', '母',
       'お兄さん', '兄', 'お父さん', '父親', '父', '弟', '妹', '妻', '子供達', '子供']
       .map(noun => nounProfiles.find(w =>
         w.surface === noun))
       .filter(notEmpty).map(noun => [
         noun.surface, noun.reading, noun.readingHiragana,
-      ].join(',')).join(',').split(','));
+      ].join(',')).join(',').split(',').sort((a, b) => b.length - a.length));
   verbProfiles.filter(verb => verb.influenceForm === '連用タ接続').forEach(verb => {
     const destForm = verbProfiles.find(searchVerb =>
       searchVerb.baseForm === verb.baseForm && searchVerb.influenceForm === '連用形');
     if (!destForm) {
       return;
     }
-    builder.addCollocationFix(` ${verb.surface}-たい `, `${destForm.surface}たい`);
+    builder.addCollocationFix(` ${verb.surface}-たい-`, `${destForm.surface}たい`);
   });
   verbProfiles.filter(verb => verb.influenceForm === '連用形').forEach(verb => {
-    builder.addCollocationFix(` ${verb.surface}-る `, `${verb.baseForm}`);
+    builder.addCollocationFix(` ${verb.surface}-る-`, `${verb.baseForm}`);
   });
   return builder.compileToString();
 }
