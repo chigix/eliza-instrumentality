@@ -21,4 +21,9 @@ export class MessageListComponent implements OnInit {
     this.chattingContext.push(message);
   }
 
+  clearMessageList() {
+    while (this.chattingContext.shift()) {
+    }
+  }
+
 }

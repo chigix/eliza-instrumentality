@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "compileOnSave": false,
   "compilerOptions": {
-    // "baseUrl": "./",
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
@@ -25,5 +24,6 @@
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true
-  }
+  },
+  "include": ["src/**/*.ts", "stories/**/*.ts"],
 }

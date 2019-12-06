@@ -7,7 +7,7 @@
     "build:playground": "ng build",
     "lint:playground": "ng lint",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
+    "build-storybook": "shx rm -rf ./storybook-static.tar.gz && build-storybook && tar -zcvf ./storybook-static.tar.gz ./storybook-static",
     "release-storybook": "build-storybook && ngh --dir=storybook-static --cname=eliza.js.org --no-silent"
   },
   "private": true,
