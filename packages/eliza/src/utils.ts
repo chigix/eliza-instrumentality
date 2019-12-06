@@ -19,9 +19,15 @@ export function getAssembledReply(ctx: ReassembleContext | null, defaultMsg?: st
   return defaultMsg || null;
 }
 
-export function getAssembledContext(ctx?: ReassembleContext | null) {
+export function getAssembledContext(ctx?: ReassembleContext | null): {
+  reassembled: string,
+  annotations: { [annotate: string]: string },
+} | null {
   if (ctx && ctx.assembled) {
-    return ctx.assembled;
+    return {
+      reassembled: ctx.assembled.reassembled,
+      annotations: ctx.assembled.annotations || {},
+    };
   }
   return null;
 }

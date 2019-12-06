@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 import { loadEliza, Eliza, loadElizaInEnglish } from 'eliza-core';
 import ELIZA_SCRIPT from 'raw-loader!eliza-util/src/eliza.script';
 import ELIZA_SCRIPT_JP from 'raw-loader!eliza-jp/dist/eliza.ipadic.script';
+import USER_STORY_SCRIPT from 'raw-loader!eliza-jp/dist/user-story-composer.script';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,8 @@ export class ElizaBasicService {
         this.lastEliza = await loadEliza(of(ELIZA_SCRIPT_JP));
         break;
       case 'user-story':
-        throw new Error('Not Supported in this branch');
+        this.lastEliza = await loadEliza(of(USER_STORY_SCRIPT));
+        break;
 
       default:
         throw new Error('Unknown script');

@@ -5,7 +5,7 @@ import { Reassemble } from './Reassemble';
 import * as estring from './estring';
 import * as mention from './mention-router';
 import {
-  PrePost, MentionRoute, Word, ReassembleContext,
+  PrePost, MentionRoute, Word, ReassembleContext, DecomposedSlot,
 } from './interfaces';
 import { Key } from './key';
 import { GotoKey } from './key-goto';
@@ -351,8 +351,14 @@ class ElizaImpl implements Eliza {
       this.keys.map(key => this.fullyDecompose(key, s))
         .filter(notEmpty).sort(
           (ctxA, ctxB) =>
-            (ctxA.matches || { slottedTokens: [s] }).slottedTokens.join('').length
-            - (ctxB.matches || { slottedTokens: [s] }).slottedTokens.join('').length);
+            (ctxA.matches ||
+              { slottedTokens: [{ token: s, scopes: {} } as DecomposedSlot] })
+              .slottedTokens.filter(t => Object.keys(t.scopes).length < 1)
+              .map(t => t.token).join('').length
+            - (ctxB.matches ||
+              { slottedTokens: [{ token: s, scopes: {} } as DecomposedSlot] })
+              .slottedTokens.filter(t => Object.keys(t.scopes).length < 1)
+              .map(t => t.token).join('').length);
     return sortedReplyContexts[0] || null;
   }
 
@@ -425,12 +431,13 @@ class ElizaImpl implements Eliza {
    *   the gotoKey to use.
    * Otherwise return the response.
    */
-  private assemble(d: Decomp, decomposedTokens: string[]): {
+  private assemble(d: Decomp, decomposedSlots: DecomposedSlot[]): {
     reassembled: string,
     annotations: {
       [annotate: string]: string,
     },
   } | GotoKey | null {
+    const decomposedTokens = decomposedSlots.map(s => s.token);
     const rule = d.nextRule();
     const assembledResult = rule.assemble(
       decomposedTokens.map(token => PrePostUtil.translate(this.postList, token)));

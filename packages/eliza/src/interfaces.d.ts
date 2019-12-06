@@ -6,10 +6,15 @@ export type MentionRoute = {
   words: Word[],
 };
 
-export type SlotDecomposition = string[];
+export type DecomposedSlot = {
+  token: string,
+  scopes: {
+    [key: string]: { text: string, mentionTag?: string },
+  },
+};
 
 export type HyperDecomposition = {
-  slottedTokens: SlotDecomposition,
+  slottedTokens: DecomposedSlot[],
   scopes: {
     [key: string]: { text: string, mentionTag?: string }
   }

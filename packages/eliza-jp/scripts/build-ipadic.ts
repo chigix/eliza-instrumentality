@@ -58,8 +58,9 @@ export async function build(opts: {
     .addMention('@verbal', verbalProfiles
       .map(verbal => verbal.surface).sort((a, b) => b.length - a.length))
     .addMention('@rawVerb', verbProfiles
-      .filter(verb => verb.influenceForm === '基本形')
-      .map(verb => verb.surface).sort((a, b) => b.length - a.length))
+      .filter(verb => verb.influenceForm === '連用形')
+      .map(verb => [verb.surface + 'ます', verb.baseForm].join(',')).join(',').split(',')
+      .sort((a, b) => b.length - a.length))
     .addMention('@adjIi', adjProfiles
       .filter(adj => adj.influenceForm === '基本形')
       .map(adj => adj.surface).sort((a, b) => b.length - a.length))
@@ -85,9 +86,12 @@ export async function build(opts: {
       .filter(verb => verb.influenceForm === '連用タ接続')
       .map(verb => [
         verb.surface + 'ています', verb.surface + 'でいます',
+      ].join(',')).join(',').split(',').sort((a, b) => b.length - a.length))
+    .addMention('@doingSimple', verbProfiles
+      .filter(verb => verb.influenceForm === '連用タ接続')
+      .map(verb => [
         verb.surface + 'ている', verb.surface + 'でいる',
-      ].join(','))
-      .join(',').split(',').sort((a, b) => b.length - a.length))
+      ].join(',')).join(',').split(',').sort((a, b) => b.length - a.length))
     .addMention('@wasDoing', verbProfiles
       .filter(verb => verb.influenceForm === '連用タ接続')
       .map(verb => [
@@ -117,6 +121,7 @@ export async function build(opts: {
     builder.addCollocationFix(` ${verb.surface}-たい-`, `${destForm.surface}たい`);
   });
   verbProfiles.filter(verb => verb.influenceForm === '連用形').forEach(verb => {
+    builder.addCollocationFix(` ${verb.surface}ます-る-`, `${verb.baseForm}`);
     builder.addCollocationFix(` ${verb.surface}-る-`, `${verb.baseForm}`);
   });
   return builder.compileToString();

@@ -63,13 +63,17 @@ function cartesianAllScopes(
  *
  * Learned from `SynList.matchDecomp(String str, String pat, String[] segmentedPat)`
  */
-export function matchDecomposition<P extends keyof any>(
+export function matchDecomposition(
   synonyms: MentionRoute[], str: string, pat: string): HyperDecomposition | null {
   const patternProfile = segmentScope(pat);
   if (patternProfile.length < 3) {
     // no tagged mentionRoute in decomposition pattern
     const simpleMatch = EString.match(str, pat);
-    return simpleMatch ? { slottedTokens: simpleMatch, scopes: {} } : null;
+    return simpleMatch ? {
+      slottedTokens: simpleMatch.map(t => ({
+        token: t, scopes: {},
+      })), scopes: {},
+    } : null;
   }
   //  Look up the synonym
   const cartesianAllSyn = cartesianAllScopes(synonyms, patternProfile);
@@ -94,6 +98,7 @@ export function matchDecomposition<P extends keyof any>(
   matchedPattern.forEach(p => {
     const expectedParts = EString.count(p.pattern, '*');
     if (p.mentionTag && p.innerPattern) {
+      const mentionTag = p.mentionTag;
       const innerDecomposition = matchDecomposition(
         synonyms, p.pattern, p.innerPattern);
       if (!innerDecomposition) {
@@ -101,8 +106,13 @@ export function matchDecomposition<P extends keyof any>(
           `Fatal Error: Decomposing in scope failed: [${p.pattern}] --> [${p.innerPattern}]`);
       }
       innerDecomposition.slottedTokens
-        .forEach(part => hyperDecomposeRes.slottedTokens.push(part));
-      hyperDecomposeRes.scopes[p.mentionTag] = {
+        .forEach(part => {
+          part.scopes[mentionTag] = {
+            text: p.pattern, mentionTag: p.mentionTag,
+          };
+          hyperDecomposeRes.slottedTokens.push(part);
+        });
+      hyperDecomposeRes.scopes[mentionTag] = {
         text: p.pattern, mentionTag: p.mentionTag,
       };
       return;
@@ -112,7 +122,7 @@ export function matchDecomposition<P extends keyof any>(
       if (part === undefined || part === null) {
         throw new Error('Fatal Error: Extracted Terms not matching wildcards!');
       }
-      hyperDecomposeRes.slottedTokens.push(part);
+      hyperDecomposeRes.slottedTokens.push({ token: part, scopes: {} });
     }
   });
   return hyperDecomposeRes;

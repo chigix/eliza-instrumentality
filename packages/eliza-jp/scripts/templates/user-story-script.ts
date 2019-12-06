@@ -33,7 +33,7 @@ export class UserStoryScript implements ScriptTemplate {
   }
 
   public addMention(mentionTag: string, words: string[]) {
-    if (['@negativeVerb', '@adjIi'].indexOf(mentionTag) > -1) {
+    if (['@negativeVerb', '@adjIi', '@wasDoing'].indexOf(mentionTag) > -1) {
       return this;
     }
     this.mentions.push({ tag: mentionTag, words });
@@ -66,6 +66,7 @@ export class UserStoryScript implements ScriptTemplate {
     script += 'pre: "わたくし " => "私"\n';
     script += 'pre: "エリザさん" => "あなた"\n';
     script += 'pre: "ボットさん" => "あなた"\n';
+    script += 'pre: "インターン" => "インターンシップ"\n';
     script += 'pre: "貴方" => "あなた"\n';
     script += 'pre: "ております" => "ています"\n';
     script += 'pre: "のなまえは" => "の名前は"\n';
@@ -85,7 +86,6 @@ export class UserStoryScript implements ScriptTemplate {
     script += 'post: "私が" => "あなたが"\n';
     script += 'post: "子供" => "こども"\n';
     script += 'post: "子供達" => "子供たち"\n';
-    script += 'post: "インターン" => "インターンシップ"\n';
     script += 'post: "皆は" => "みんなは"\n';
     script += 'post: "皆の" => "みんなの"\n';
     script += 'post: "可愛い" => "かわいい"\n';
@@ -117,6 +117,18 @@ export class UserStoryScript implements ScriptTemplate {
     script += '    replyYes: false\n';
     script += '    replyNo: true\n';
     script += '    reasmb: placeholder\n';
+    script += '  decomp: *ないです*\n';
+    script += '    replyYes: false\n';
+    script += '    replyNo: true\n';
+    script += '    reasmb: placeholder\n';
+    script += '  decomp: *ありません*\n';
+    script += '    replyYes: false\n';
+    script += '    replyNo: true\n';
+    script += '    reasmb: placeholder\n';
+    script += '  decomp: *ございません*\n';
+    script += '    replyYes: false\n';
+    script += '    replyNo: true\n';
+    script += '    reasmb: placeholder\n';
     script += 'key: userStoryIdentification\n';
     // TODO: multiple matching template is weak point in current algorithm
     // script += '  decomp: *@rawVerb[*]ため、*@desireVerb[*たい]*\n';
@@ -143,30 +155,21 @@ export class UserStoryScript implements ScriptTemplate {
     script += '    bIsDependencyOfA: false\n';
     script += '    bHasPurposeA: true\n';
     script += '    reasmb: placeholder\n';
-    script += '  decomp: *@desireVerbHoshii[*てほしかった]*\n';
+    script += '  decomp: *@desireVerbHoshii[*ほしかった]*\n';
     script += '    userStoryA: (1) (2)-る-\n';
     script += '    reasmb: placeholder\n';
-    script += '  decomp: *@desireVerbHoshii[*でほしかった]*\n';
-    script += '    userStoryA: (1) (2)-る-\n';
-    script += '    reasmb: placeholder\n';
-    script += '  decomp: *@desireVerbHoshii[*てほしい]*\n';
-    script += '    userStoryA: (1) (2)-る-\n';
-    script += '    reasmb: placeholder\n';
-    script += '  decomp: *@desireVerbHoshii[*でほしい]*\n';
+    script += '  decomp: *@desireVerbHoshii[*ほしい]*\n';
     script += '    userStoryA: (1) (2)-る-\n';
     script += '    reasmb: placeholder\n';
     script += '  decomp: *@desireVerb[*たい]*\n';
     script += '    userStoryA: (1) (2)-る-\n';
     script += '    reasmb: placeholder\n';
-    script += '  decomp: *@doing[*ています]*\n';
+    script += '  decomp: *@doing[*います]*\n';
     script += '    userStoryA: (1) (2)-る-\n';
-    script += '  decomp: *@doing[*でいます]*\n';
-    script += '    userStoryA: (1) (2)-る-\n';
-    script += '    reasmb: placeholder\n';
-    script += '  decomp: *@doing[*ている]*\n';
+    script += '  decomp: *@doingSimple[*いる]*\n';
     script += '    userStoryA: (1) (2)-る-\n';
     script += '    reasmb: placeholder\n';
-    script += '  decomp: *@doing[*でいる]*\n';
+    script += '  decomp: *@rawVerb[*]*\n';
     script += '    userStoryA: (1) (2)-る-\n';
     script += '    reasmb: placeholder\n';
     script += '  decomp: *です*\n';
