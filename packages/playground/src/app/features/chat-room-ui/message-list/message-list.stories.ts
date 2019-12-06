@@ -36,7 +36,7 @@ const ELIZA_TEST_SCRIPT = [
     + '<app-message-list></app-message-list>'
     + '<app-input-space (messageSent)="processInput($event)"></app-input-space>',
 })
-export class ChatBoxStoryComponent implements OnInit {
+export class MessageListStoryComponent implements OnInit {
 
   @ViewChild(MessageListComponent, { static: true })
   private readonly msgListComp!: MessageListComponent;
@@ -110,7 +110,7 @@ storiesOf('MessageListComponent', module)
         MatButtonModule,
         ChatRoomUiModule,
       ],
-      declarations: [ChatBoxStoryComponent],
+      declarations: [MessageListStoryComponent],
     })
   ).add('Eliza Test', () => {
     return {
