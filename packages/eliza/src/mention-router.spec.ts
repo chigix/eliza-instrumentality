@@ -75,6 +75,14 @@ test('Match Multiple Mentions', () => {
         family: { mentionTag: 'family', text: 'children' },
       },
     });
+  expect(matchDecomposition([mentions.everyone, mentions.family],
+    ' @attack-at-mark: no one hates my children ', ' @attack-at-mark: @everyone[*] * @family[*ren] ')).toStrictEqual({
+      slottedTokens: ['no one', 'hates my', 'child'],
+      scopes: {
+        everyone: { mentionTag: 'everyone', text: 'no one' },
+        family: { mentionTag: 'family', text: 'children' },
+      },
+    });
 });
 
 test('Matching Scenario in Japanese', () => {
