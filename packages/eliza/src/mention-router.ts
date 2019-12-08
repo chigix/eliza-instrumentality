@@ -3,6 +3,14 @@ import { MentionRoute, HyperDecomposition } from './interfaces';
 import { NoMentionDefException } from './exceptions';
 import { cartesian } from './utils';
 
+const NAMING_CHARACTERS = ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  + 'abcdefghijklmnopqrstuvwxyz'
+  + '0123456789-_').split('');
+
+function validateMentionNaming(name: string) {
+  return name.split('').find(c => NAMING_CHARACTERS.indexOf(c) < 0) === undefined;
+}
+
 function segmentScope(pattern: string) {
   const patternProfile: Array<{ pattern: string, mentions?: string[] }> = [];
   let restToSegment = pattern;
@@ -12,11 +20,30 @@ function segmentScope(pattern: string) {
       patternProfile.push({ pattern: restToSegment });
       break;
     }
-    // isolate the mentionRoute tag
-    patternProfile.push({ pattern: segmentedPat[0] });
-    // TODO: Mention Tag Calculus
-    patternProfile.push({ pattern: segmentedPat[2], mentions: [segmentedPat[1]] });
-    restToSegment = segmentedPat[3];
+    if (validateMentionNaming(segmentedPat[1])) {
+      // isolate the mentionRoute tag
+      patternProfile.push({ pattern: segmentedPat[0] });
+      // TODO: Mention Tag Calculus
+      patternProfile.push({ pattern: segmentedPat[2], mentions: [segmentedPat[1]] });
+      restToSegment = segmentedPat[3];
+      continue;
+    }
+    const searchMentionNamePosition = segmentedPat[1].lastIndexOf('@');
+    if (searchMentionNamePosition > -1) {
+      // isolate the mentionRoute tag
+      patternProfile.push({
+        pattern: segmentedPat[0] + '@'
+          + segmentedPat[1].substring(0, searchMentionNamePosition),
+      });
+      // TODO: Mention Tag Calculus
+      patternProfile.push({
+        pattern: segmentedPat[2],
+        mentions: [segmentedPat[1].substring(searchMentionNamePosition + 1)],
+      });
+      restToSegment = segmentedPat[3];
+      continue;
+    }
+    patternProfile.push({ pattern: restToSegment });
   }
   return patternProfile;
 }

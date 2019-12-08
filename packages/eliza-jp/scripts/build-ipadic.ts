@@ -125,5 +125,9 @@ export async function build(opts: {
     builder.addCollocationFix(` ${verb.surface}-る-`, `${verb.baseForm}`);
     builder.addCollocationFix(` ${verb.baseForm}-る-`, `${verb.baseForm}`);
   });
+  verbProfiles.filter(verb => verb.influenceForm === '連用タ接続').forEach(verb => {
+    builder.addCollocationFix(` ${verb.surface}て-る-`, `${verb.baseForm}`);
+    builder.addCollocationFix(` ${verb.surface}で-る-`, `${verb.baseForm}`);
+  });
   return builder.compileToString();
 }
