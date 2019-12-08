@@ -12,6 +12,7 @@ import {
 } from 'src/app/features/chat-room-ui';
 
 import { UserStory } from './1-interfaces';
+import { noop } from './utils';
 
 function normalizeAnnotations(annotations: { [annotate: string]: string }) {
   return {
@@ -32,6 +33,68 @@ function normalizeAnnotations(annotations: { [annotate: string]: string }) {
   };
 }
 
+function makeReplyYesNoHandler(
+  ifYes: () => void,
+  ifNo: () => void,
+  ifUserStory: (userStory: UserStory) => void,
+  other: () => void) {
+  return (annotate: { replyYes?: boolean, replyNo?: boolean, userStoryA?: UserStory }) => {
+    if (annotate.replyYes) {
+      return ifYes();
+    }
+    if (annotate.replyNo) {
+      return ifNo();
+    }
+    if (annotate.userStoryA) {
+      return ifUserStory(annotate.userStoryA);
+    }
+    return other();
+  };
+}
+
+function searchMissingLink(userStoryGraphDB: UserStory[], eliza: Eliza) {
+  // Scan missing links
+  for (const us of userStoryGraphDB) {
+    for (const link of us.links) {
+      if (link.hasPurposeTo === undefined) {
+        return {
+          pendingConfirm: makeReplyYesNoHandler(
+            function ifYesReplied() { link.hasPurposeTo = 1; },
+            function ifNoReplied() { link.hasPurposeTo = -1; },
+            noop, noop),
+          confirmMsg: new ChattingRecord({
+            text: getAssembledReply(eliza.processHyperInput(
+              `@confirm-clarification: ${us.rawMessages[0]} => ${link.userStory.rawMessages[0]}`),
+              '僕疲れました。'),
+            fromUserInput: false,
+          }),
+        };
+      }
+      if (link.isDependencyOf === undefined) {
+        return {
+          pendingConfirm: makeReplyYesNoHandler(
+            function ifYesReplied() {
+              link.isDependencyOf = 1;
+              const reverse = link.userStory.links.find(l => l.userStory.number === us.number);
+              if (reverse) {
+                reverse.isDependencyOf = -1;
+              }
+            },
+            function ifNoReplied() { link.isDependencyOf = -1; },
+            noop, noop),
+          confirmMsg: new ChattingRecord({
+            text: getAssembledReply(eliza.processHyperInput(
+              `@confirm-dependency: ${us.rawMessages[0]} => ${link.userStory.rawMessages[0]}`),
+              '僕疲れました。'),
+            fromUserInput: false,
+          }),
+        };
+      }
+    }
+  }
+  return null;
+}
+
 @Component({
   selector: 'app-sb-message-list',
   template:
@@ -41,7 +104,7 @@ function normalizeAnnotations(annotations: { [annotate: string]: string }) {
 export class USGBotStoryComponent implements OnInit {
 
   private userStoryGraphDB: UserStory[] = [];
-  private pendingConfirm?: (annotate: { replyYes?: boolean, replyNo?: boolean }) => void;
+  private pendingConfirm?: ReturnType<typeof makeReplyYesNoHandler>;
 
   @ViewChild(MessageListComponent, { static: true })
   private readonly msgListComp!: MessageListComponent;
@@ -77,9 +140,14 @@ export class USGBotStoryComponent implements OnInit {
         text: 'システムが落ちちゃいました', fromUserInput: false,
       }));
     }
+    if (processedInput.reassembled !== 'placeholder') {
+      return this.msgListComp.pushMessage(new ChattingRecord({
+        text: processedInput.reassembled, fromUserInput: false,
+      }));
+    }
     const annotations = normalizeAnnotations(processedInput.annotations);
     if ((annotations.replyYes || annotations.replyNo) && this.pendingConfirm) {
-      return this.pendingConfirm(annotations);
+      this.pendingConfirm({ replyYes: annotations.replyYes, replyNo: annotations.replyNo });
     }
     console.log(userInput.getRawText(), annotations);
     const extractingUserStories: UserStory[] = [];
@@ -97,21 +165,13 @@ export class USGBotStoryComponent implements OnInit {
         links: [],
       });
     }
-    this.userStoryGraphDB.forEach(us => {
-      extractingUserStories.forEach(ele => {
-        us.links.push({
-          userStory: ele,
-        });
-      });
-    });
-    extractingUserStories.forEach(ele => {
-      this.userStoryGraphDB.forEach(us => {
-        ele.links.push({
-          userStory: us,
-        });
-      });
-    });
     this.userStoryGraphDB.push(...extractingUserStories);
+    extractingUserStories.forEach(ele => {
+      this.userStoryGraphDB.filter(us => us.number !== ele.number).forEach(us => {
+        ele.links.push({ userStory: us });
+        us.links.push({ userStory: ele });
+      });
+    });
     if (extractingUserStories.length === 2) {
       if (annotations.aHasPurposeB) {
         (extractingUserStories[0].links
@@ -134,26 +194,32 @@ export class USGBotStoryComponent implements OnInit {
           || { isDependencyOf: false }).isDependencyOf = true;
       }
     }
-    for (const us of this.userStoryGraphDB) {
-      for (const link of us.links) {
-        if (link.hasPurposeTo === undefined) {
-          return this.msgListComp.pushMessage(new ChattingRecord({
-            text: getAssembledReply(this.elizaInstance.processHyperInput(
-              `@confirm-clarification: ${us.rawMessages[0]} => ${link.userStory.rawMessages[0]}`),
-              '僕疲れました。'),
-            fromUserInput: false,
-          }));
-        }
-        if (link.isDependencyOf === undefined) {
-          return this.msgListComp.pushMessage(new ChattingRecord({
-            text: getAssembledReply(this.elizaInstance.processHyperInput(
-              `@confirm-dependency: ${us.rawMessages[0]} => ${link.userStory.rawMessages[0]}`),
-              '僕疲れました。'),
-            fromUserInput: false,
-          }));
-        }
-      }
+    if (extractingUserStories.length === 1 && this.pendingConfirm) {
+      this.pendingConfirm({ userStoryA: extractingUserStories[0] });
     }
+    const linkConfirmation = searchMissingLink(this.userStoryGraphDB, this.elizaInstance);
+    if (linkConfirmation) {
+      this.pendingConfirm = linkConfirmation.pendingConfirm;
+      return this.msgListComp.pushMessage(linkConfirmation.confirmMsg);
+    }
+    if (extractingUserStories.length === 1) {
+      this.pendingConfirm = makeReplyYesNoHandler(
+        noop, noop, userStory => {
+          const link = extractingUserStories[0].links.find(l => l.userStory.number === userStory.number);
+          if (!link) {
+            return;
+          }
+          link.hasPurposeTo = 1;
+        }, noop,
+      );
+      return this.msgListComp.pushMessage(new ChattingRecord({
+        text: getAssembledReply(
+          this.elizaInstance.processHyperInput(
+            `@request-purpose: ${extractingUserStories[0].rawMessages[0]}`), '僕疲れました。'),
+        fromUserInput: false,
+      }));
+    }
+    this.pendingConfirm = undefined;
     return this.msgListComp.pushMessage(new ChattingRecord({
       text: getAssembledReply(
         this.elizaInstance.processHyperInput(`@request-user-story`), '僕疲れました。'),

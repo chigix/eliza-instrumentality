@@ -123,6 +123,7 @@ export async function build(opts: {
   verbProfiles.filter(verb => verb.influenceForm === '連用形').forEach(verb => {
     builder.addCollocationFix(` ${verb.surface}ます-る-`, `${verb.baseForm}`);
     builder.addCollocationFix(` ${verb.surface}-る-`, `${verb.baseForm}`);
+    builder.addCollocationFix(` ${verb.baseForm}-る-`, `${verb.baseForm}`);
   });
   return builder.compileToString();
 }
