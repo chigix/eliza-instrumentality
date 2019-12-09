@@ -11,7 +11,7 @@ import {
   ChattingRecord, ChatRoomUiModule, MessageListComponent, InputSpaceComponent,
 } from 'src/app/features/chat-room-ui';
 
-import { UserStory } from './1-interfaces';
+import { UserStory, LabeledTerms } from './1-interfaces';
 import { noop } from './utils';
 
 function normalizeAnnotations(annotations: { [annotate: string]: string }) {
@@ -31,6 +31,28 @@ function normalizeAnnotations(annotations: { [annotate: string]: string }) {
     replyNo: annotations.replyNo ?
       (annotations.replyNo === 'true') : undefined,
   };
+}
+
+function normalizeTokenAnnotations(annotations: { [annotate: string]: string }) {
+  const normalized: LabeledTerms = {
+    leftPawns: '', knights: [], rooks: [], aims: [], pawns: [],
+  };
+  if (annotations.termKing) {
+    normalized.king = annotations.termKing;
+  }
+  if (annotations.termPawns) {
+    normalized.leftPawns = annotations.termPawns;
+  }
+  if (annotations.aims) {
+    normalized.aims.push(annotations.aims);
+  }
+  if (annotations.termPawnLeft) {
+    normalized.pawns.push(annotations.termPawnLeft);
+  }
+  if (annotations.termKnight) {
+    normalized.knights.push(annotations.termKnight);
+  }
+  return normalized;
 }
 
 function makeReplyYesNoHandler(
@@ -95,6 +117,84 @@ function searchMissingLink(userStoryGraphDB: UserStory[], eliza: Eliza) {
   return null;
 }
 
+function removeUserStory(userStoryGraphDB: UserStory[], toRemove: UserStory) {
+  const shiftedUserStories: UserStory[] = [];
+  while (true) {
+    const toCheck = userStoryGraphDB.shift();
+    if (!toCheck) {
+      break;
+    }
+    if (toCheck.number !== toRemove.number) {
+      shiftedUserStories.push(toCheck);
+    }
+    toCheck.links = toCheck.links.filter(l => l.userStory.number !== toRemove.number);
+  }
+  shiftedUserStories.forEach(us => userStoryGraphDB.push());
+}
+
+function searchSimilarUserStory(userStoryDb: UserStory[], search: UserStory, delimiter: Eliza, weighter: Eliza) {
+  function getFeatures(us: UserStory) {
+    return us.rawMessages.map(msg => {
+      let assembled = getAssembledContext(delimiter.processHyperInput(`@semantic-capture: ${msg}`));
+      if (!assembled) {
+        return null;
+      }
+      const toReturn = normalizeTokenAnnotations(assembled.annotations);
+      do {
+        if (toReturn.leftPawns.length < 1 || !assembled) {
+          return toReturn;
+        }
+        const update = normalizeTokenAnnotations(assembled.annotations);
+        toReturn.leftPawns = update.leftPawns;
+        toReturn.pawns = toReturn.pawns.concat(update.pawns);
+        toReturn.knights = toReturn.knights.concat(update.knights);
+        assembled = getAssembledContext(weighter.processHyperInput(`@select-pawns: ${toReturn.leftPawns}`));
+      } while (true);
+    }).reduce((reduced, terms) => {
+      if (!terms || !reduced) {
+        return reduced;
+      }
+      if (terms.king) {
+        reduced.king = terms.king;
+      }
+      reduced.aims = reduced.aims.concat(terms.aims);
+      reduced.knights = reduced.knights.concat(terms.knights);
+      reduced.pawns = reduced.pawns.concat(terms.pawns);
+      return reduced;
+    }, {
+      aims: [] as string[],
+      knights: [] as string[],
+      pawns: [] as string[],
+    } as LabeledTerms);
+  }
+  const toCompare = userStoryDb
+    .filter(us => us.number !== search.number).map(userStory => ({
+      userStory, features: getFeatures(userStory) as LabeledTerms,
+    })).filter(labeled => !!labeled.features);
+  if (toCompare.length < 1) {
+    return null;
+  }
+  return toCompare.map(labeledUserStory => {
+    const weighted: { [key: string]: number } = {};
+    if (labeledUserStory.features.king) {
+      weighted[labeledUserStory.features.king] = 100;
+    }
+    labeledUserStory.features.aims.forEach(t => weighted[t] = (weighted[t] || 0) + 20);
+    labeledUserStory.features.knights.forEach(t => weighted[t] = (weighted[t] || 0) + 10);
+    labeledUserStory.features.pawns.forEach(t => weighted[t] = (weighted[t] || 0) + 2);
+    const total = Object.keys(weighted).map(k => weighted[k]).reduce((r, c) => r + c, 0);
+    Object.keys(weighted).forEach(k => weighted[k] = weighted[k] / total);
+    return { ...labeledUserStory, weighted };
+  }).map(labeledUserStory => {
+    return {
+      userStory: labeledUserStory.userStory,
+      similarity: Object.keys(labeledUserStory.weighted)
+        .map(t => search.rawMessages[0].indexOf(t) > -1 ? labeledUserStory.weighted[t] : 0)
+        .reduce((r, c) => r + c, 0)
+    };
+  });
+}
+
 @Component({
   selector: 'app-sb-message-list',
   template:
@@ -105,6 +205,7 @@ export class USGBotStoryComponent implements OnInit {
 
   private userStoryGraphDB: UserStory[] = [];
   private pendingConfirm?: ReturnType<typeof makeReplyYesNoHandler>;
+  private recentUserStoryMention: UserStory[] = [];
 
   @ViewChild(MessageListComponent, { static: true })
   private readonly msgListComp!: MessageListComponent;
@@ -126,6 +227,7 @@ export class USGBotStoryComponent implements OnInit {
   }
 
   processInput(userInput: ChattingRecord) {
+    const USER_STORY_DB = this.userStoryGraphDB;
     this.inputComp.clearInput();
     this.msgListComp.pushMessage(userInput);
     if (!this.elizaInstance) { return; }
@@ -148,6 +250,7 @@ export class USGBotStoryComponent implements OnInit {
     const annotations = normalizeAnnotations(processedInput.annotations);
     if ((annotations.replyYes || annotations.replyNo) && this.pendingConfirm) {
       this.pendingConfirm({ replyYes: annotations.replyYes, replyNo: annotations.replyNo });
+      this.pendingConfirm = undefined;
     }
     console.log(userInput.getRawText(), annotations);
     const extractingUserStories: UserStory[] = [];
@@ -157,6 +260,7 @@ export class USGBotStoryComponent implements OnInit {
         number: this.userStoryGraphDB.length,
         links: [],
       });
+      this.recentUserStoryMention = [];
     }
     if (annotations.userStoryB) {
       extractingUserStories.push({
@@ -164,6 +268,7 @@ export class USGBotStoryComponent implements OnInit {
         number: this.userStoryGraphDB.length,
         links: [],
       });
+      this.recentUserStoryMention = [];
     }
     this.userStoryGraphDB.push(...extractingUserStories);
     extractingUserStories.forEach(ele => {
@@ -171,6 +276,7 @@ export class USGBotStoryComponent implements OnInit {
         ele.links.push({ userStory: us });
         us.links.push({ userStory: ele });
       });
+      this.recentUserStoryMention.push(ele);
     });
     if (extractingUserStories.length === 2) {
       if (annotations.aHasPurposeB) {
@@ -197,6 +303,29 @@ export class USGBotStoryComponent implements OnInit {
     if (extractingUserStories.length === 1 && this.pendingConfirm) {
       this.pendingConfirm({ userStoryA: extractingUserStories[0] });
     }
+    do {
+      const questionEquivalenceUserStory = this.recentUserStoryMention.shift();
+      if (!questionEquivalenceUserStory) {
+        break;
+      }
+      const r = (searchSimilarUserStory(this.userStoryGraphDB,
+        questionEquivalenceUserStory, this.elizaInstance, this.elizaInstance) || [])
+        .filter(search => search.similarity > 0.5).sort((a, b) => b.similarity - a.similarity);
+      if (r.length > 0) {
+        this.pendingConfirm = makeReplyYesNoHandler(
+          function ifYesReplied() {
+            r[0].userStory.rawMessages.push(questionEquivalenceUserStory.rawMessages[0]);
+            removeUserStory(USER_STORY_DB, questionEquivalenceUserStory);
+          },
+          noop, noop, noop);
+        return this.msgListComp.pushMessage(new ChattingRecord({
+          text: getAssembledReply(
+            this.elizaInstance.processHyperInput(
+              `@confirm-equivalence: ${questionEquivalenceUserStory.rawMessages[0]} => ${r[0].userStory.rawMessages[0]}`),
+            '僕疲れました。'), fromUserInput: false,
+        }));
+      }
+    } while (0);
     const linkConfirmation = searchMissingLink(this.userStoryGraphDB, this.elizaInstance);
     if (linkConfirmation) {
       this.pendingConfirm = linkConfirmation.pendingConfirm;

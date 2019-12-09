@@ -7,3 +7,13 @@ export interface UserStory {
     hasPurposeTo?: number,
   }>;
 }
+
+export interface LabeledTerms {
+  pawns: string[];
+  leftPawns: string;
+  aims: string[];
+  knights: string[];
+  rooks: string[];
+  queen?: string | undefined;
+  king?: string | undefined;
+}

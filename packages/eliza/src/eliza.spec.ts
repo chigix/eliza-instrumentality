@@ -61,7 +61,7 @@ test('Japanese Script Testing', async () => {
   expect(eliza.getInitialStr()).toEqual('ようこそ。どんなことがあったんですか？');
   expect(getAssembledReply(eliza.processInput('こんにちは'))).toEqual('こんにちは。お元気ですか');
   expect(getAssembledReply(eliza.processInput('私は研究者です'))).toEqual('あなたは 研究者 だと思っていますか ?');
-  expect(getAssembledReply(eliza.processInput('私はインターンへ行きたいです'))).toEqual('あなたは インターンシップへ行きたい になりたいのですか ?');
+  expect(getAssembledReply(eliza.processInput('私はインターンへ行きたいです'))).toEqual('近頃行く予定があるのですか ?');
   expect(getAssembledReply(eliza.processInput('勉強のため、学校へ行きます'))).toEqual('それは興味深い点ですね。それでどうなりました？');
   expect(getAssembledReply(eliza.processInput('学校へ行ったら、勉強できます'))).toEqual('あなたは行きたいのですか？');
   expect(getAssembledReply(eliza.processInput('はい、分かりました。'))).toEqual('あなたは結構ポジティブに見えます。');
@@ -73,8 +73,7 @@ test('Semantic Annotation Script', async () => {
     .toStrictEqual(
       {
         annotations: {
-          aHasPurposeB: 'false', aIsDependencyOfB: 'false',
-          bHasPurposeA: 'true', bIsDependencyOfA: 'false',
+          aHasPurposeB: 'false', aIsDependencyOfB: 'false', bHasPurposeA: 'true',
           userStoryA: '料理を勉強する', userStoryB: '料理教室へ通う',
         },
         reassembled: 'placeholder',
@@ -96,5 +95,11 @@ test('Semantic Annotation Script', async () => {
       {
         annotations: {},
         reassembled: '料理教室へ通うの は 料理を勉強するの の前で終わる必要ありますか ?',
+      });
+  expect(getAssembledContext(eliza.processHyperInput('@semantic-capture: 私はご飯を準備する')))
+    .toStrictEqual(
+      {
+        annotations: { termKing: 'ご飯', termPawns: '' },
+        reassembled: 'placeholder',
       });
 });

@@ -59,6 +59,7 @@ export async function build(opts: {
       .map(verbal => verbal.surface).sort((a, b) => b.length - a.length))
     .addMention('@rawVerb', verbProfiles
       .filter(verb => verb.influenceForm === '連用形')
+      .filter(verb => ['する'].indexOf(verb.baseForm) < 0)
       .map(verb => [verb.surface + 'ます', verb.baseForm].join(',')).join(',').split(',')
       .sort((a, b) => b.length - a.length))
     .addMention('@adjIi', adjProfiles

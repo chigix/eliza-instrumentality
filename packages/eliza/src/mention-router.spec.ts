@@ -27,7 +27,11 @@ const mentions = {
 test('Match check for pre rule', () => {
   expect(
     matchDecomposition([mentions.belief], ' hello ', '*'),
-  ).toEqual({ slottedTokens: [' hello '], scopes: {} });
+  ).toEqual({
+    slottedTokens: [
+      { scopes: {}, token: ' hello ' },
+    ], scopes: {},
+  });
   expect(
     matchDecomposition([mentions.everyone],
       ' Everybody hates me ', '* @everyone[*] *'),
@@ -36,7 +40,11 @@ test('Match check for pre rule', () => {
     matchDecomposition([mentions.sad],
       ' I am unhappy ', '* @sad[*] *'),
   ).toEqual({
-    slottedTokens: [' I am', 'unhappy', ''],
+    slottedTokens: [
+      { scopes: {}, token: ' I am' },
+      { scopes: { sad: { mentionTag: 'sad', text: 'unhappy' } }, token: 'unhappy' },
+      { scopes: {}, token: '' },
+    ],
     scopes: { sad: { mentionTag: 'sad', text: 'unhappy' } },
   });
 });
@@ -44,7 +52,11 @@ test('Match check for pre rule', () => {
 test('Match Multiple Mentions', () => {
   expect(matchDecomposition([mentions.everyone],
     ' everybody hates me ', '* @everyone[*] *')).toStrictEqual({
-      slottedTokens: ['', 'everybody', 'hates me '],
+      slottedTokens: [
+        { scopes: {}, token: '' },
+        { scopes: { everyone: { mentionTag: 'everyone', text: 'everybody' } }, token: 'everybody' },
+        { scopes: {}, token: 'hates me ' },
+      ],
       scopes: {
         everyone: { mentionTag: 'everyone', text: 'everybody' },
       },
@@ -53,7 +65,13 @@ test('Match Multiple Mentions', () => {
     ' nobody hates my dad ', '* @everyone[*] * @family[*] *')).toThrowError();
   expect(matchDecomposition([mentions.everyone, mentions.family],
     ' nobody hates my dad ', '* @everyone[*] * @family[*] *')).toStrictEqual({
-      slottedTokens: ['', 'nobody', 'hates my', 'dad', ''],
+      slottedTokens: [
+        { scopes: {}, token: '' },
+        { scopes: { everyone: { mentionTag: 'everyone', text: 'nobody' } }, token: 'nobody' },
+        { scopes: {}, token: 'hates my' },
+        { scopes: { family: { mentionTag: 'family', text: 'dad' } }, token: 'dad' },
+        { scopes: {}, token: '' },
+      ],
       scopes: {
         everyone: { mentionTag: 'everyone', text: 'nobody' },
         family: { mentionTag: 'family', text: 'dad' },
@@ -61,7 +79,13 @@ test('Match Multiple Mentions', () => {
     });
   expect(matchDecomposition([mentions.everyone, mentions.family],
     ' nobody hates my children ', '* @everyone[*] * @family[*ren] *')).toStrictEqual({
-      slottedTokens: ['', 'nobody', 'hates my', 'child', ''],
+      slottedTokens: [
+        { scopes: {}, token: '' },
+        { scopes: { everyone: { mentionTag: 'everyone', text: 'nobody' } }, token: 'nobody' },
+        { scopes: {}, token: 'hates my' },
+        { scopes: { family: { mentionTag: 'family', text: 'children' } }, token: 'child' },
+        { scopes: {}, token: '' },
+      ],
       scopes: {
         everyone: { mentionTag: 'everyone', text: 'nobody' },
         family: { mentionTag: 'family', text: 'children' },
@@ -69,7 +93,13 @@ test('Match Multiple Mentions', () => {
     });
   expect(matchDecomposition([mentions.everyone, mentions.family],
     ' no one hates my children ', '* @everyone[*] * @family[*ren] *')).toStrictEqual({
-      slottedTokens: ['', 'no one', 'hates my', 'child', ''],
+      slottedTokens: [
+        { scopes: {}, token: '' },
+        { scopes: { everyone: { mentionTag: 'everyone', text: 'no one' } }, token: 'no one' },
+        { scopes: {}, token: 'hates my' },
+        { scopes: { family: { mentionTag: 'family', text: 'children' } }, token: 'child' },
+        { scopes: {}, token: '' },
+      ],
       scopes: {
         everyone: { mentionTag: 'everyone', text: 'no one' },
         family: { mentionTag: 'family', text: 'children' },
@@ -77,7 +107,23 @@ test('Match Multiple Mentions', () => {
     });
   expect(matchDecomposition([mentions.everyone, mentions.family],
     ' @attack-at-mark: no one hates my children ', ' @attack-at-mark: @everyone[*] * @family[*ren] ')).toStrictEqual({
-      slottedTokens: ['no one', 'hates my', 'child'],
+      slottedTokens: [
+        { scopes: { everyone: { mentionTag: 'everyone', text: 'no one' } }, token: 'no one' },
+        { scopes: {}, token: 'hates my' },
+        { scopes: { family: { mentionTag: 'family', text: 'children' } }, token: 'child' },
+      ],
+      scopes: {
+        everyone: { mentionTag: 'everyone', text: 'no one' },
+        family: { mentionTag: 'family', text: 'children' },
+      },
+    });
+  expect(matchDecomposition([mentions.everyone, mentions.family],
+    ' @attack-at-mark: no one hates my children ', ' @attack-at-mark: @everyone[*] * @family[*ren] ')).toStrictEqual({
+      slottedTokens: [
+        { scopes: { everyone: { mentionTag: 'everyone', text: 'no one' } }, token: 'no one' },
+        { scopes: {}, token: 'hates my' },
+        { scopes: { family: { mentionTag: 'family', text: 'children' } }, token: 'child' },
+      ],
       scopes: {
         everyone: { mentionTag: 'everyone', text: 'no one' },
         family: { mentionTag: 'family', text: 'children' },
@@ -90,7 +136,11 @@ test('Matching Scenario in Japanese', () => {
     ' 私は研究者です ', '*私は*です')).toBeNull();
   expect(matchDecomposition([mentions.everyone, mentions.family],
     ' 私は研究者です ', '*私は*です*')).toStrictEqual({
-      slottedTokens: [' ', '研究者', ' '],
+      slottedTokens: [
+        { scopes: {}, token: ' ' },
+        { scopes: {}, token: '研究者' },
+        { scopes: {}, token: ' ' },
+      ],
       scopes: {},
     });
 });
