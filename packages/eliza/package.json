@@ -11,7 +11,7 @@
     "psychotherapist"
   ],
   "author": "Richard Lea <chigix@zoho.com>",
-  "homepage": "https://github.com/chigix/eliza-instrumentality",
+  "homepage": "https://eliza.js.org",
   "license": "MIT",
   "main": "./src/index.ts",
   "repository": {
