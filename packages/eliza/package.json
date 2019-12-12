@@ -1,6 +1,6 @@
 {
   "name": "eliza-core",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A rendition of ELIZA program engine by Weizenbaum sharable for all javascript environments",
   "keywords": [
     "nlp",
@@ -11,7 +11,7 @@
     "psychotherapist"
   ],
   "author": "Richard Lea <chigix@zoho.com>",
-  "homepage": "https://github.com/chigix/eliza-instrumentality",
+  "homepage": "https://eliza.js.org",
   "license": "MIT",
   "main": "./src/index.ts",
   "repository": {
