@@ -1,6 +1,6 @@
 {
   "name": "playground",
-  "version": "1.2.0-alpha.1",
+  "version": "1.2.0-alpha.2",
   "scripts": {
     "ng": "ng",
     "start:playground": "ng serve",
