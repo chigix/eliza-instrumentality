@@ -1,4 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 
 import { InputSpaceComponent } from './input-space.component';
 
@@ -8,7 +13,10 @@ describe('InputSpaceComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ InputSpaceComponent ]
+      declarations: [InputSpaceComponent],
+      imports: [
+        NoopAnimationsModule, FormsModule,
+        MatFormFieldModule, MatInputModule, MatIconModule],
     })
     .compileComponents();
   }));
