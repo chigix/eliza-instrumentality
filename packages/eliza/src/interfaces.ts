@@ -1,18 +1,18 @@
 export type Reasemb = string;
 export type Word = string;
-export type MentionRoute = {
-  tag: Word,
-  words: Word[],
-};
+export interface MentionRoute {
+  tag: Word;
+  words: Word[];
+}
 
 export type SlotDecomposition = string[];
 
-export type HyperDecomposition = {
-  slottedTokens: SlotDecomposition,
+export interface HyperDecomposition {
+  slottedTokens: SlotDecomposition;
   scopes: {
-    [key: string]: { text: string, mentionTag?: string, annotation?: string }
-  }
-};
+    [key: string]: { text: string, mentionTag?: string, annotation?: string },
+  };
+}
 
 /**
  * Eliza pre-post entry (two words).
