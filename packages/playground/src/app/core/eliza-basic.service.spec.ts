@@ -17,7 +17,7 @@ describe('ElizaBasicService', () => {
 
   it('should create an Eliza instance', async(async () => {
     const service: ElizaBasicService = TestBed.get(ElizaBasicService);
-    const eliza = await service.createEliza();
+    const eliza = await service.createEliza('eliza-en');
     expect(eliza.getInitialStr()).toEqual('How do you do.  Please tell me your problem.');
   }));
 });
