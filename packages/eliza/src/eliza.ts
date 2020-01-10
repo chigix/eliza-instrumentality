@@ -4,7 +4,7 @@ import { Decomp } from './decompo';
 import * as estring from './estring';
 import * as mention from './mention-router';
 import {
-  PrePost, Reasemb, MentionRoute, Word, HyperDecomposition,
+  PrePost, Reasemb, MentionRoute, Word,
 } from './interfaces';
 import { Key } from './key';
 import { GotoKey } from './key-goto';
@@ -14,7 +14,7 @@ import * as printers from './printers';
 import { notEmpty } from './utils';
 import {
   UnexpectedNumberException, UnknownRuleException, GotoLostException,
-  ScriptInterpretingError,
+  ScriptInterpretingError, InvalidStringException,
 } from './exceptions';
 
 const printSynonyms = true;
@@ -228,6 +228,9 @@ class ElizaImpl implements Eliza {
    * Process a line of input
    */
   public processInput(s: string) {
+    if (typeof s !== 'string') {
+      throw new InvalidStringException(s);
+    }
     //  Do some input transformations first.
     s = estring.replaceAll(s,
       'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');
