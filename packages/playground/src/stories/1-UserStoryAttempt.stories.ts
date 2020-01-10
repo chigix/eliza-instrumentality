@@ -79,20 +79,33 @@ function searchMissingLink(userStoryGraphDB: UserStory[], eliza: Eliza) {
   for (const us of userStoryGraphDB) {
     for (const link of us.links) {
       if (link.hasPurposeTo === undefined) {
+        const purposePart = getAssembledReply(eliza.processHyperInput(
+          `@verb-transform: ${link.userStory.rawMessages[0]} -ため-`, ['xVerbTransformation']));
+        console.log(`@confirm-clarification: ${us.rawMessages[0]} => ${purposePart} -ため-`);
         return {
           pendingConfirm: makeReplyYesNoHandler(
             function ifYesReplied() { link.hasPurposeTo = 1; },
             function ifNoReplied() { link.hasPurposeTo = -1; },
             noop, noop),
-          confirmMsg: new ChattingRecord({
-            text: getAssembledReply(eliza.processHyperInput(
-              `@confirm-clarification: ${us.rawMessages[0]} => ${link.userStory.rawMessages[0]}`),
-              '僕疲れました。'),
-            fromUserInput: false,
-          }),
+          confirmMsg:
+            purposePart === null ?
+              new ChattingRecord({
+                text: 'purpose transform failed',
+                fromUserInput: false,
+              }) :
+              new ChattingRecord({
+                text: getAssembledReply(eliza.processHyperInput(
+                  `@confirm-clarification: ${us.rawMessages[0]} => ${purposePart} -ため-`,
+                  ['xQuestion']),
+                  '@confirm-clarification reassembling failed'),
+                fromUserInput: false,
+              }),
         };
       }
       if (link.isDependencyOf === undefined) {
+        const partDep = getAssembledReply(eliza.processHyperInput(
+          `@verb-transform: ${us.rawMessages[0]} -ないと-`, ['xVerbTransformation']));
+        console.log(`@confirm-dependency: ${partDep} -ないと- => ${link.userStory.rawMessages[0]}`);
         return {
           pendingConfirm: makeReplyYesNoHandler(
             function ifYesReplied() {
@@ -104,12 +117,19 @@ function searchMissingLink(userStoryGraphDB: UserStory[], eliza: Eliza) {
             },
             function ifNoReplied() { link.isDependencyOf = -1; },
             noop, noop),
-          confirmMsg: new ChattingRecord({
-            text: getAssembledReply(eliza.processHyperInput(
-              `@confirm-dependency: ${us.rawMessages[0]} => ${link.userStory.rawMessages[0]}`),
-              '僕疲れました。'),
-            fromUserInput: false,
-          }),
+          confirmMsg:
+            partDep === null ?
+              new ChattingRecord({
+                text: 'dependency transform failed',
+                fromUserInput: false,
+              }) :
+              new ChattingRecord({
+                text: getAssembledReply(eliza.processHyperInput(
+                  `@confirm-dependency: ${partDep} -ないと- => ${link.userStory.rawMessages[0]}`,
+                  ['xQuestion']),
+                  '@confirm-dependency reassembling failed'),
+                fromUserInput: false,
+              }),
         };
       }
     }
@@ -236,10 +256,13 @@ export class USGBotStoryComponent implements OnInit {
       this.msgListComp.clearMessageList();
       return;
     }
-    const processedInput = getAssembledContext(this.elizaInstance.processInput(userInput.getRawText()));
+    const processedInput = getAssembledContext(this.elizaInstance.processInput(userInput.getRawText(), ['userStoryIdentification']));
     if (!processedInput) {
       return this.msgListComp.pushMessage(new ChattingRecord({
-        text: 'システムが落ちちゃいました', fromUserInput: false,
+        text: getAssembledReply(
+          this.elizaInstance.processInput(userInput.getRawText(), ['what']),
+          'あり得ないバグは発生したようです'),
+        fromUserInput: false,
       }));
     }
     if (processedInput.reassembled !== 'placeholder') {
@@ -303,29 +326,29 @@ export class USGBotStoryComponent implements OnInit {
     if (extractingUserStories.length === 1 && this.pendingConfirm) {
       this.pendingConfirm({ userStoryA: extractingUserStories[0] });
     }
-    do {
-      const questionEquivalenceUserStory = this.recentUserStoryMention.shift();
-      if (!questionEquivalenceUserStory) {
-        break;
-      }
-      const r = (searchSimilarUserStory(this.userStoryGraphDB,
-        questionEquivalenceUserStory, this.elizaInstance, this.elizaInstance) || [])
-        .filter(search => search.similarity > 0.5).sort((a, b) => b.similarity - a.similarity);
-      if (r.length > 0) {
-        this.pendingConfirm = makeReplyYesNoHandler(
-          function ifYesReplied() {
-            r[0].userStory.rawMessages.push(questionEquivalenceUserStory.rawMessages[0]);
-            removeUserStory(USER_STORY_DB, questionEquivalenceUserStory);
-          },
-          noop, noop, noop);
-        return this.msgListComp.pushMessage(new ChattingRecord({
-          text: getAssembledReply(
-            this.elizaInstance.processHyperInput(
-              `@confirm-equivalence: ${questionEquivalenceUserStory.rawMessages[0]} => ${r[0].userStory.rawMessages[0]}`),
-            '僕疲れました。'), fromUserInput: false,
-        }));
-      }
-    } while (0);
+    // do {
+    //   const questionEquivalenceUserStory = this.recentUserStoryMention.shift();
+    //   if (!questionEquivalenceUserStory) {
+    //     break;
+    //   }
+    //   const r = (searchSimilarUserStory(this.userStoryGraphDB,
+    //     questionEquivalenceUserStory, this.elizaInstance, this.elizaInstance) || [])
+    //     .filter(search => search.similarity > 0.5).sort((a, b) => b.similarity - a.similarity);
+    //   if (r.length > 0) {
+    //     this.pendingConfirm = makeReplyYesNoHandler(
+    //       function ifYesReplied() {
+    //         r[0].userStory.rawMessages.push(questionEquivalenceUserStory.rawMessages[0]);
+    //         removeUserStory(USER_STORY_DB, questionEquivalenceUserStory);
+    //       },
+    //       noop, noop, noop);
+    //     return this.msgListComp.pushMessage(new ChattingRecord({
+    //       text: getAssembledReply(
+    //         this.elizaInstance.processHyperInput(
+    //           `@confirm-equivalence: ${questionEquivalenceUserStory.rawMessages[0]} => ${r[0].userStory.rawMessages[0]}`),
+    //         '僕疲れました。'), fromUserInput: false,
+    //     }));
+    //   }
+    // } while (0);
     const linkConfirmation = searchMissingLink(this.userStoryGraphDB, this.elizaInstance);
     if (linkConfirmation) {
       this.pendingConfirm = linkConfirmation.pendingConfirm;

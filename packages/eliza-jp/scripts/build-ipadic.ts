@@ -59,7 +59,7 @@ export async function build(opts: {
       .map(verbal => verbal.surface).sort((a, b) => b.length - a.length))
     .addMention('@rawVerb', verbProfiles
       .filter(verb => verb.influenceForm === '連用形')
-      .filter(verb => ['する'].indexOf(verb.baseForm) < 0)
+      .filter(verb => ['する', 'す', 'たる', 'く', '得'].indexOf(verb.baseForm) < 0)
       .map(verb => [verb.surface + 'ます', verb.baseForm].join(',')).join(',').split(',')
       .sort((a, b) => b.length - a.length))
     .addMention('@adjIi', adjProfiles
@@ -129,6 +129,10 @@ export async function build(opts: {
   verbProfiles.filter(verb => verb.influenceForm === '連用タ接続').forEach(verb => {
     builder.addCollocationFix(` ${verb.surface}て-る-`, `${verb.baseForm}`);
     builder.addCollocationFix(` ${verb.surface}で-る-`, `${verb.baseForm}`);
+  });
+  verbProfiles.filter(verb => verb.influenceForm === '未然形').forEach(verb => {
+    builder.addCollocationFix(` ${verb.baseForm}-ない-`, `${verb.surface}ない`);
+    builder.addCollocationFix(` ${verb.baseForm}-なくな-`, `${verb.surface}なくな`);
   });
   return builder.compileToString();
 }

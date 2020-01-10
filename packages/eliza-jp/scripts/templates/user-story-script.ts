@@ -33,7 +33,7 @@ export class UserStoryScript implements ScriptTemplate {
   }
 
   public addMention(mentionTag: string, words: string[]) {
-    if (['@negativeVerb', '@adjIi', '@wasDoing'].indexOf(mentionTag) > -1) {
+    if (['@negativeVerb', '@wasDoing'].indexOf(mentionTag) > -1) {
       return this;
     }
     this.mentions.push({ tag: mentionTag, words });
@@ -114,6 +114,8 @@ export class UserStoryScript implements ScriptTemplate {
     script += 'mention: @everyone "みんな", "皆様", "皆さん", "皆"\n';
     script += 'mention: @computer "計算機", "コンピューター", "コンピュータ", "パソコン", "機械", "マシン"\n';
     script += 'key: what\n';
+    script += '  decomp: *@adjIi[*]*\n';
+    script += '    reasmb: (2)のは何のことでしょうか\n';
     script += '  decomp: *\n';
     script += '    reasmb: (1)というのは何するのでしょうか\n';
     script += 'key: matchYesNo\n';
@@ -197,19 +199,46 @@ export class UserStoryScript implements ScriptTemplate {
     script += '    reasmb: いいですね。具体的にやることを教えてください。\n';
     script += '  decomp: *\n';
     script += '    reasmb: goto what\n';
+    script += 'key: xVerbTransformation\n';
+    script += '  decomp: *@verb-transform: *する* -ため-*\n';
+    script += '    reasmb: (2)するため\n';
+    script += '  decomp: *@verb-transform: *@rawVerb[*]* -ため-*\n';
+    script += '    reasmb: (2) (3)ため\n';
+    script += '  decomp: *@verb-transform: * -ため-*\n';
+    script += '    reasmb: (2)のため\n';
+    script += '  decomp: *@verb-transform: *する* -ないと-*\n';
+    script += '    reasmb: (2)しないと\n';
+    script += '  decomp: *@verb-transform: *@rawVerb[*]* -ないと-*\n';
+    script += '    reasmb: (2) (3)-ない-と\n';
+    script += '  decomp: *@verb-transform: * -ないと-*\n';
+    script += '    reasmb: (2) ではないと\n';
     script += 'key: xQuestion\n';
     script += '  decomp: *@confirm-equivalence: * => *\n';
     script += '    reasmb: (2) のは (3) のと同じですか ?\n';
-    script += '  decomp: *@confirm-dependency: * => *\n';
-    script += '    reasmb: (2) は (3) の前で終わる必要ありますか ?\n';
-    script += '  decomp: *@confirm-clarification: * => *\n';
-    script += '    reasmb: (2) は (3) を意図したものですか ?\n';
+    script += '  decomp: *@confirm-dependency: * -ないと- => *を@rawVerb[*]*\n';
+    script += '    reasmb: (2)、 (3) も  (4)-なくな-るのですか ?\n';
+    script += '  decomp: *@confirm-dependency: * -ないと- => *を@verbal[*]する*\n';
+    script += '    reasmb: (2)、 (3) は (4)できないのですか ?\n';
+    script += '  decomp: *@confirm-dependency: * -ないと- => *@rawVerb[*]*\n';
+    script += '    reasmb: (2)、 (3) も  (4)-なくな-るのですか ?\n';
+    script += '  decomp: *@confirm-dependency: * -ないと- => *@verbal[*]する*\n';
+    script += '    reasmb: (2)、 (3) (4)できないのですか ?\n';
+    script += '  decomp: *@confirm-dependency: * -ないと- => *する*\n';
+    script += '    reasmb: (2)、 (3)はできないのですか ?\n';
+    script += '  decomp: *@confirm-dependency: * -ないと- => *\n';
+    script += '    reasmb: (2)、 (3) のことがなくなるのですか ?\n';
+    script += '  decomp: *@confirm-clarification: *@rawVerb[*]* => * -ため-*\n';
+    script += '    reasmb: (5)、 (2) (3)のでしょうか ?\n';
+    script += '  decomp: *@confirm-clarification: *する* => * -ため-*\n';
+    script += '    reasmb: (4)、 (2)するのでしょうか ?\n';
+    script += '  decomp: *@confirm-clarification: * => * -ため-*\n';
+    script += '    reasmb: (3)、 (2)になるのですか ?\n';
     script += '  decomp: *@request-user-story *\n';
     script += '    reasmb: 今は何をやっていますか ?\n';
     script += '  decomp: *@request-purpose: *\n';
-    script += '    reasmb: 何のために、 (2)をやっているのでしょうか教えてほしいです。\n';
-    script += '  decomp: *\n';
-    script += '    reasmb: placeholder\n';
+    script += '    reasmb: なぜ (2)のですか ?\n';
+    script += '  decomp: *@confirm-*: *\n';
+    script += '    reasmb: Question Generation Failed: (3)\n';
     script += 'key: xSemanticCapture\n';
     script += '  decomp: *@semantic-capture: *は*を@verbal[*]する*\n';
     script += '    termPawns: (2)\n';
