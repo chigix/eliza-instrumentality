@@ -3,7 +3,7 @@ import { fromFile, SCRIPT_PATH } from 'eliza-util';
 import { IPADIC, USER_STORY_COMP } from 'eliza-jp';
 import { getAssembledReply, getAssembledContext } from './utils';
 
-test('Instantiate Eliza Main Class', async () => {
+test.skip('Instantiate Eliza Main Class', async () => {
   const eliza = await loadEliza(fromFile(SCRIPT_PATH + '/eliza.script'));
   expect(eliza.toJson()).toMatchSnapshot();
 });
@@ -12,14 +12,14 @@ test('simple initial conversation', async () => {
   const eliza = await loadElizaInEnglish(fromFile(SCRIPT_PATH + '/eliza.script'));
   expect(eliza.getInitialStr())
     .toEqual('How do you do.  Please tell me your problem.');
-  expect(eliza.processInput('Hello'))
-    .toEqual('How do you do.  Please state your problem.');
-  expect(eliza.processInput('Everybody hates me'))
-    .toEqual('Really, everybody ?');
-  expect(eliza.processInput('Everybody hates me'))
-    .toEqual('Surely not everybody.');
-  expect(eliza.processInput('Everybody hates me'))
-    .toEqual('Can you think of anyone in particular ?');
+  expect(getAssembledContext(eliza.processInput('Hello'))).toStrictEqual(
+    { annotations: {}, reassembled: 'How do you do.  Please state your problem.' });
+  expect(getAssembledContext(eliza.processInput('Everybody hates me')))
+    .toStrictEqual({ annotations: {}, reassembled: 'Really, everybody ?' });
+  expect(getAssembledContext(eliza.processInput('Everybody hates me')))
+    .toStrictEqual({ annotations: {}, reassembled: 'Surely not everybody.' });
+  expect(getAssembledContext(eliza.processInput('Everybody hates me')))
+    .toStrictEqual({ annotations: {}, reassembled: 'Can you think of anyone in particular ?' });
 });
 
 test('eliza script', async () => {
@@ -61,7 +61,7 @@ test('Japanese Script Testing', async () => {
   expect(eliza.getInitialStr()).toEqual('ようこそ。どんなことがあったんですか？');
   expect(getAssembledReply(eliza.processInput('こんにちは'))).toEqual('こんにちは。お元気ですか');
   expect(getAssembledReply(eliza.processInput('私は研究者です'))).toEqual('あなたは 研究者 だと思っていますか ?');
-  expect(getAssembledReply(eliza.processInput('私はインターンへ行きたいです'))).toEqual('近頃行く予定があるのですか ?');
+  expect(getAssembledReply(eliza.processInput('私はインターンへ行きたいです'))).toEqual('もし行くようになりましたら、何をしますか ?');
   expect(getAssembledReply(eliza.processInput('勉強のため、学校へ行きます'))).toEqual('それは興味深い点ですね。それでどうなりました？');
   expect(getAssembledReply(eliza.processInput('学校へ行ったら、勉強できます'))).toEqual('あなたは行きたいのですか？');
   expect(getAssembledReply(eliza.processInput('はい、分かりました。'))).toEqual('あなたは結構ポジティブに見えます。');
@@ -95,6 +95,12 @@ test('Semantic Annotation Script', async () => {
       {
         annotations: {},
         reassembled: '料理教室へ通わないと、 料理 は 勉強できないのですか ?',
+      });
+  expect(getAssembledContext(eliza.processHyperInput('@confirm-clarification: 料理を勉強する => 料理教室へ通うため -ため-')))
+    .toStrictEqual(
+      {
+        annotations: {},
+        reassembled: '料理教室へ通うため、 料理を勉強するのでしょうか ?',
       });
   expect(getAssembledContext(eliza.processHyperInput('@semantic-capture: 私はご飯を準備する')))
     .toStrictEqual(

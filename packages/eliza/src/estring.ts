@@ -99,7 +99,7 @@ function match_v1(str: string, pat: string): string[] | null {
   const matches: string[] = [];
   let i = 0; // Used to scan str
   let pos = 0; // used to scan the given pattern
-  while (pos < pat.length && matches.length < Math.max(matches.length, 4)) {
+  while (pos < pat.length) {
     switch (pat.charAt(pos)) {
       case '*':
         const n1 = (pos + 1 === pat.length) ?

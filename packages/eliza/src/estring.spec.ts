@@ -33,4 +33,8 @@ test('Match Japanese Patterns', () => {
   expect(match('*ですか', '*@*[*]*')).toBeNull();
   expect(match(' 私は研究者です ', '*私は*です*')).toStrictEqual([
     ' ', '研究者', ' ']);
+  expect(match(
+    ' @confirm-clarification: 料理を勉強する => 料理教室へ通うため -ため- ',
+    '*@confirm-clarification: *する* => * -ため-*'))
+    .toStrictEqual([' ', '料理を勉強', '', '料理教室へ通うため', ' ']);
 });
