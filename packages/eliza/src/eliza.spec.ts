@@ -90,16 +90,16 @@ test('Semantic Annotation Script', async () => {
         annotations: { replyNo: 'false', replyYes: 'true' },
         reassembled: 'placeholder',
       });
-  expect(getAssembledContext(eliza.processHyperInput('@confirm-dependency: 料理教室へ通うの => 料理を勉強するの')))
+  expect(getAssembledContext(eliza.processHyperInput('@confirm-dependency: 料理教室へ通わないと -ないと- => 料理を勉強する')))
     .toStrictEqual(
       {
         annotations: {},
-        reassembled: '料理教室へ通うの は 料理を勉強するの の前で終わる必要ありますか ?',
+        reassembled: '料理教室へ通わないと、 料理 は 勉強できないのですか ?',
       });
   expect(getAssembledContext(eliza.processHyperInput('@semantic-capture: 私はご飯を準備する')))
     .toStrictEqual(
       {
-        annotations: { termKing: 'ご飯', termPawns: '' },
+        annotations: { termKing: '準備する', termPawns: '私' },
         reassembled: 'placeholder',
       });
 });

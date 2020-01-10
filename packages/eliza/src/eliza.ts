@@ -384,20 +384,30 @@ class ElizaImpl implements Eliza {
         decomposition, matches,
         assembled: null as ReturnType<typeof ASSEMBLE_FUNC>,
       };
-    }).filter(notEmpty).find(ctx => {
-      ctx.assembled = this.assemble(ctx.decomposition, ctx.matches.slottedTokens);
-      if (!ctx.assembled) {
-        return false;
-      }
-      if (ctx.assembled instanceof GotoKey) {
-        if (ctx.assembled.getKey()) {
+    }).filter(notEmpty).sort(
+      (ctxA, ctxB) =>
+        (ctxA.matches ||
+          { slottedTokens: [{ token: s, scopes: {} } as DecomposedSlot] })
+          .slottedTokens.filter(t => Object.keys(t.scopes).length < 1)
+          .map(t => t.token).join('').length
+        - (ctxB.matches ||
+          { slottedTokens: [{ token: s, scopes: {} } as DecomposedSlot] })
+          .slottedTokens.filter(t => Object.keys(t.scopes).length < 1)
+          .map(t => t.token).join('').length)
+      .find(ctx => {
+        ctx.assembled = this.assemble(ctx.decomposition, ctx.matches.slottedTokens);
+        if (!ctx.assembled) {
+          return false;
+        }
+        if (ctx.assembled instanceof GotoKey) {
+          if (ctx.assembled.getKey()) {
+            return true;
+          }
+        } else {
           return true;
         }
-      } else {
-        return true;
-      }
-      return false;
-    }) || null;
+        return false;
+      }) || null;
   }
 
   private fullyDecompose(key: Key, s: string): ReassembleContext | null {
