@@ -3,7 +3,10 @@
   "version": "1.2.0-alpha.1",
   "description": "Run eliza program in cli on node.",
   "keywords": [
-    "eliza"
+    "eliza",
+    "cli",
+    "therapist",
+    "chatbot"
   ],
   "author": "Richard Lea <chigix@zoho.com>",
   "homepage": "https://eliza.js.org",

@@ -15,7 +15,7 @@ import * as printers from './printers';
 import { notEmpty } from './utils';
 import {
   UnexpectedNumberException, UnknownRuleException, GotoLostException,
-  ScriptInterpretingError, DuplicateAnnotateException,
+  ScriptInterpretingError, DuplicateAnnotateException, InvalidStringException,
 } from './exceptions';
 
 const printSynonyms = true;
@@ -293,6 +293,9 @@ class ElizaImpl implements Eliza {
    * Process a line of input
    */
   public processInput(s: string) {
+    if (typeof s !== 'string') {
+      throw new InvalidStringException(s);
+    }
     //  Do some input transformations first.
     s = estring.replaceAll(s,
       'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');

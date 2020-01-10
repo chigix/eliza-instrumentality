@@ -31,12 +31,12 @@
     "@angular/platform-browser": "~8.2.14",
     "@angular/platform-browser-dynamic": "~8.2.14",
     "@angular/router": "~8.2.14",
-    "rxjs": "^6.5.3",
+    "rxjs": "^6.5.4",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.803.19",
-    "@angular/cli": "~8.3.19",
+    "@angular-devkit/build-angular": "~0.803.22",
+    "@angular/cli": "~8.3.22",
     "@angular/compiler-cli": "~8.2.14",
     "@angular/language-service": "~8.2.14",
     "@babel/core": "^7.7.2",
