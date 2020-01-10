@@ -102,6 +102,11 @@ test('Semantic Annotation Script', async () => {
         annotations: {},
         reassembled: '料理教室へ通うため、 料理を勉強するのでしょうか ?',
       });
+  expect(getAssembledContext(eliza.processHyperInput(
+    '@confirm-clarification:  インターンへ行く => 特論を 受講するため -ため-',
+    ['xQuestion'])))
+    .toStrictEqual(
+      { annotations: {}, reassembled: '特論を 受講するため、 インターンへ 行くのでしょうか ?' });
   expect(getAssembledContext(eliza.processHyperInput('@semantic-capture: 私はご飯を準備する')))
     .toStrictEqual(
       {

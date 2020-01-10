@@ -27,8 +27,8 @@ export interface Eliza {
   getInitialStr(): string;
   isFinished(): boolean;
   toJson(): void;
-  processInput(s: string): ReassembleContext | null;
-  processHyperInput(s: string): ReassembleContext | null;
+  processInput(s: string, keyLimit?: string[]): ReassembleContext | null;
+  processHyperInput(s: string, keyLimit?: string[]): ReassembleContext | null;
 }
 
 export async function loadEliza(script$: Observable<string>): Promise<Eliza> {
@@ -258,8 +258,22 @@ class ElizaImpl implements Eliza {
     return toPrint;
   }
 
-  public processHyperInput(s: string) {
+  public processHyperInput(s: string, keyLimit?: string[]) {
     let matchedParts = estring.match(s, '*.*');
+    if (Array.isArray(keyLimit)) {
+      const limitedKeys = this.keys.filter(k => {
+        const keyName = k.getKey();
+        if (!keyName) {
+          return false;
+        }
+        return keyLimit.indexOf(keyName) > -1;
+      });
+      if (limitedKeys.length < 1) {
+        return null;
+      }
+      const context = this.fullyDecompose(limitedKeys[0], s);
+      return context;
+    }
     //  Break apart sentences, and do each separately.
     while (matchedParts) {
       const reply = this.sentence(matchedParts[0]);
@@ -292,7 +306,7 @@ class ElizaImpl implements Eliza {
   /**
    * Process a line of input
    */
-  public processInput(s: string) {
+  public processInput(s: string, keyLimit?: string[]) {
     if (typeof s !== 'string') {
       throw new InvalidStringException(s);
     }
@@ -304,7 +318,7 @@ class ElizaImpl implements Eliza {
     s = estring.replaceAll(s, ',?!', '...');
     //  Compress out multiple space.
     s = estring.compress(s);
-    return this.processHyperInput(s);
+    return this.processHyperInput(s, keyLimit);
   }
 
   /**
