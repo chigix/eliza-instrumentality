@@ -256,7 +256,7 @@ export class USGBotStoryComponent implements OnInit {
       this.msgListComp.clearMessageList();
       return;
     }
-    const processedInput = getAssembledContext(this.elizaInstance.processInput(userInput.getRawText(), ['userStoryIdentification']));
+    const processedInput = getAssembledContext(this.elizaInstance.processInput(userInput.getRawText(), ['matchYesNo', 'userStoryIdentification']));
     if (!processedInput) {
       return this.msgListComp.pushMessage(new ChattingRecord({
         text: getAssembledReply(

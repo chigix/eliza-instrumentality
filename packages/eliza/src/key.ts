@@ -10,19 +10,10 @@ export function createKey(
 
 export class Key {
   constructor(
-    private key: string | null,
+    private key: string,
     private rank: number,
     private decomp: Decomp[] | null,
   ) { }
-
-  /**
-   * copy
-   */
-  protected copy(k: Key) {
-    this.key = k.key;
-    this.rank = k.rank;
-    this.decomp = k.decomp;
-  }
 
   /**
    * key

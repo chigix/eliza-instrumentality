@@ -27,18 +27,19 @@ export interface Eliza {
   getInitialStr(): string;
   isFinished(): boolean;
   toJson(): void;
-  processInput(s: string, keyLimit?: string[]): ReassembleContext | null;
-  processHyperInput(s: string, keyLimit?: string[]): ReassembleContext | null;
+  processInput(s: string): ReassembleContext | null;
+  processHyperInput(s: string): ReassembleContext | null;
 }
 
-export async function loadEliza(script$: Observable<string>): Promise<Eliza> {
-  const eliza = new ElizaImpl();
+export async function loadEliza(
+  script$: Observable<string>, keyFilter?: (key: string) => boolean): Promise<Eliza> {
+  const eliza = new ElizaImpl(keyFilter || (key => true));
   await eliza.readScript(script$).toPromise();
   return eliza;
 }
 
 export async function loadElizaInEnglish(script$: Observable<string>): Promise<Eliza> {
-  const eliza = new ElizaImpl(sentence => sentence.split(' '));
+  const eliza = new ElizaImpl(key => true, sentence => sentence.split(' '));
   await eliza.readScript(script$).toPromise();
   return eliza;
 }
@@ -70,6 +71,7 @@ class ElizaImpl implements Eliza {
   private finished = false;
 
   constructor(
+    private readonly keyFilter: (key: string) => boolean,
     private readonly tokenizer?: (sentence: string) => Word[],
   ) { }
 
@@ -258,22 +260,8 @@ class ElizaImpl implements Eliza {
     return toPrint;
   }
 
-  public processHyperInput(s: string, keyLimit?: string[]) {
+  public processHyperInput(s: string) {
     let matchedParts = estring.match(s, '*.*');
-    if (Array.isArray(keyLimit)) {
-      const limitedKeys = this.keys.filter(k => {
-        const keyName = k.getKey();
-        if (!keyName) {
-          return false;
-        }
-        return keyLimit.indexOf(keyName) > -1;
-      });
-      if (limitedKeys.length < 1) {
-        return null;
-      }
-      const context = this.fullyDecompose(limitedKeys[0], s);
-      return context;
-    }
     //  Break apart sentences, and do each separately.
     while (matchedParts) {
       const reply = this.sentence(matchedParts[0]);
@@ -306,7 +294,7 @@ class ElizaImpl implements Eliza {
   /**
    * Process a line of input
    */
-  public processInput(s: string, keyLimit?: string[]) {
+  public processInput(s: string) {
     if (typeof s !== 'string') {
       throw new InvalidStringException(s);
     }
@@ -318,7 +306,7 @@ class ElizaImpl implements Eliza {
     s = estring.replaceAll(s, ',?!', '...');
     //  Compress out multiple space.
     s = estring.compress(s);
-    return this.processHyperInput(s, keyLimit);
+    return this.processHyperInput(s);
   }
 
   /**
@@ -345,7 +333,7 @@ class ElizaImpl implements Eliza {
    * (4) Try decompositions for each key.
    */
   private sentence(s: string): ReassembleContext | null {
-    s = PrePostUtil.translate(this.preList, s);
+    s = PrePostUtil.translate(this.preList, s).trim();
     s = estring.pad(s);
     if (this.quitList.indexOf(s) >= 0) {
       this.finished = true;
@@ -354,7 +342,7 @@ class ElizaImpl implements Eliza {
     }
     if (this.tokenizer) {
       let result: ReassembleContext | null = null;
-      return buildKeyStack(this.keys, this.tokenizer(s))
+      return buildKeyStack(this.keys.filter(k => this.keyFilter(k.getKey())), this.tokenizer(s))
         .find(key => {
           const ctx = this.fullyDecompose(key, s);
           if (ctx) {
@@ -365,7 +353,8 @@ class ElizaImpl implements Eliza {
         }) ? result : null;
     }
     const sortedReplyContexts =
-      this.keys.map(key => this.fullyDecompose(key, s))
+      this.keys.filter(k => this.keyFilter(k.getKey()))
+        .map(key => this.fullyDecompose(key, s))
         .filter(notEmpty).sort(
           (ctxA, ctxB) =>
             (ctxA.matches ||
@@ -467,7 +456,7 @@ class ElizaImpl implements Eliza {
     const decomposedTokens = decomposedSlots.map(s => s.token);
     const rule = d.nextRule();
     const assembledResult = rule.assemble(
-      decomposedTokens.map(token => PrePostUtil.translate(this.postList, token)));
+      decomposedTokens.map(token => PrePostUtil.translate(this.postList, token).trim()));
     if (assembledResult.gotoKey && assembledResult.gotoKey.length > 0) {
       const gotoKey = this.keys.find(k => k.getKey() === assembledResult.gotoKey);
       //  goto ruleTemplate -- set gotoKey and return false.

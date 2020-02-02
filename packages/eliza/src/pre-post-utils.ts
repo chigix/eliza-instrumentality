@@ -13,6 +13,9 @@ import { PrePost } from './interfaces';
  * Learned from `PrePostList.translate(String s)`
  */
 export function translate(prePosts: PrePost[], s: string) {
+  // The space control is too Tricky !!
+  // TODO: https://github.com/chigix/eliza-instrumentality/issues/3
+  // could solve this problem.
   let work = ' ' + estring.trim(s) + ' ';
   let lines = [] as string[];
   const toReplace = prePosts.find(search => {
@@ -25,8 +28,11 @@ export function translate(prePosts: PrePost[], s: string) {
   });
   if (toReplace) {
     work = translate(prePosts, lines[0])
-      + toReplace.dest + translate(prePosts, lines[1]);
+      + toReplace.dest.trim() + translate(prePosts, lines[1]);
   }
-
-  return work.trim();
+  let forExtract = estring.match(work, ' * ');
+  if (forExtract) { return forExtract[0]; }
+  forExtract = estring.match(work, '  ');
+  if (forExtract) { return ''; }
+  return work;
 }

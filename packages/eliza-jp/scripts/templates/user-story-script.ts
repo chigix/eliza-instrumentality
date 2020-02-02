@@ -143,14 +143,14 @@ export class UserStoryScript implements ScriptTemplate {
     // TODO: multiple matching template is weak point in current algorithm
     script += '  decomp: *@rawVerb[*]ため、*たい*\n';
     script += '    userStoryA: (1)(2)\n';
-    script += '    userStoryB: (4) \n';
+    script += '    userStoryB: (4)\n';
     script += '    aIsDependencyOfB: false\n';
     script += '    aHasPurposeB: false\n';
     script += '    bHasPurposeA: true\n';
     script += '    reasmb: placeholder\n';
     script += '  decomp: *するため、*@desireVerb[*たい]*\n';
     script += '    userStoryA: (1)する\n';
-    script += '    userStoryB: (2) (3)-る- \n';
+    script += '    userStoryB: (2) (3)-る-\n';
     script += '    aIsDependencyOfB: false\n';
     script += '    aHasPurposeB: false\n';
     script += '    bHasPurposeA: true\n';

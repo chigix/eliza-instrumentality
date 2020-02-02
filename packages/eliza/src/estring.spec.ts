@@ -25,6 +25,8 @@ test('Match check for number detection', () => {
 
 test('Match check in comparing patterns', () => {
   expect(match('*', '*@* *')).toBeNull();
+  expect(match(' b ', ' * ')).toStrictEqual(['b']);
+  expect(match(' です  ', ' *  ')).toStrictEqual(['です']);
 });
 
 test('Match Japanese Patterns', () => {
