@@ -1,6 +1,6 @@
 {
   "name": "eliza-shell",
-  "version": "1.2.0-alpha.3",
+  "version": "1.2.0-beta.0",
   "description": "Run eliza program in cli on node.",
   "keywords": [
     "eliza",
@@ -24,8 +24,8 @@
   },
   "dependencies": {
     "commander": "^4.0.1",
-    "eliza-core": "^1.2.0-alpha.3",
-    "eliza-jp": "^1.2.0-alpha.3",
+    "eliza-core": "^1.2.0-beta.0",
+    "eliza-jp": "^1.2.0-beta.0",
     "eliza-util": "^1.1.0-alpha.1",
     "import-local": "^3.0.2",
     "inquirer": "^7.0.0",
