@@ -77,7 +77,7 @@ export class MessageListStoryComponent implements OnInit {
       this.msgListComp.pushMessage(userInput);
       this.msgListComp.pushMessage(new ChattingRecord({
         text: getAssembledReply(
-          this.elizaInstance.processInput(userInput.getRawText()), 'I\m Down...'), fromUserInput: false,
+          this.elizaInstance.processInput(userInput.getRawText()), 'I\'m Down...'), fromUserInput: false,
       }));
     }
   }
@@ -93,7 +93,7 @@ export class MessageListStoryComponent implements OnInit {
       }));
       this.msgListComp.pushMessage(new ChattingRecord({
         text: getAssembledReply(
-          eliza.processInput(message), 'I\m Down...'), fromUserInput: false,
+          eliza.processInput(message), 'I\'m Down...'), fromUserInput: false,
       }));
     });
   }

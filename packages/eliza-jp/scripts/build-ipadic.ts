@@ -60,8 +60,11 @@ export async function build(opts: {
     .addMention('@rawVerb', verbProfiles
       .filter(verb => verb.influenceForm === '連用形')
       .filter(verb => ['する', 'す', 'たる', 'く', '得'].indexOf(verb.baseForm) < 0)
-      .map(verb => [verb.surface + 'ます', verb.baseForm].join(',')).join(',').split(',')
+      .map(verb => [verb.surface + 'ます', verb.surface + 'ました', verb.baseForm].join(',')).join(',').split(',')
       .sort((a, b) => b.length - a.length))
+    .addMention('@done', verbProfiles
+      .filter(verb => ['仮定形', '連用タ接続'].indexOf(verb.influenceForm))
+      .map(verb => verb.surface + 'た').sort((a, b) => b.length - a.length))
     .addMention('@adjIi', adjProfiles
       .filter(adj => adj.influenceForm === '基本形')
       .map(adj => adj.surface).sort((a, b) => b.length - a.length))
@@ -123,12 +126,15 @@ export async function build(opts: {
   });
   verbProfiles.filter(verb => verb.influenceForm === '連用形').forEach(verb => {
     builder.addCollocationFix(` ${verb.surface}ます-る-`, `${verb.baseForm}`);
+    builder.addCollocationFix(` ${verb.surface}ました-る-`, `${verb.baseForm}`);
     builder.addCollocationFix(` ${verb.surface}-る-`, `${verb.baseForm}`);
     builder.addCollocationFix(` ${verb.baseForm}-る-`, `${verb.baseForm}`);
   });
   verbProfiles.filter(verb => verb.influenceForm === '連用タ接続').forEach(verb => {
     builder.addCollocationFix(` ${verb.surface}て-る-`, `${verb.baseForm}`);
     builder.addCollocationFix(` ${verb.surface}で-る-`, `${verb.baseForm}`);
+    builder.addCollocationFix(` ${verb.surface}た-る-`, `${verb.baseForm}`);
+    builder.addCollocationFix(` ${verb.surface}だ-る-`, `${verb.baseForm}`);
   });
   verbProfiles.filter(verb => verb.influenceForm === '未然形').forEach(verb => {
     builder.addCollocationFix(` ${verb.baseForm}-ない-`, `${verb.surface}ない`);

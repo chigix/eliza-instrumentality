@@ -14,7 +14,7 @@ export class ElizaBasicService {
 
   constructor() { }
 
-  async createEliza(script: 'eliza-en' | 'eliza-jp' | 'user-story') {
+  async createEliza(script: 'eliza-en' | 'eliza-jp' | 'user-story', filter = (k: string) => true) {
     switch (script) {
       case 'eliza-en':
         this.lastEliza = await loadElizaInEnglish(of(ELIZA_SCRIPT));
@@ -23,7 +23,7 @@ export class ElizaBasicService {
         this.lastEliza = await loadEliza(of(ELIZA_SCRIPT_JP));
         break;
       case 'user-story':
-        this.lastEliza = await loadEliza(of(USER_STORY_SCRIPT));
+        this.lastEliza = await loadEliza(of(USER_STORY_SCRIPT), filter);
         break;
 
       default:
